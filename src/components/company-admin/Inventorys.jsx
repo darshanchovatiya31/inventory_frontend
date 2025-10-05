@@ -10,12 +10,8 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [inventories, setInventories] = useState([]);
   const [stats, setStats] = useState({ totalItems: 0, monthlyItems: 0, totalValue: 0, lowStock: 0 });
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPages] = useState(1);
-  const itemsPerPage = 6;
   const company = JSON.parse(localStorage.getItem('company'));
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-
-  // Modals and selected item
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -30,6 +26,13 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     supplier: '',
     image: null
   });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [filterParams, setFilterParams] = useState({});
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -37,14 +40,22 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const fetchInventories = async () => {
+  const fetchInventories = async (params = {}, append = false) => {
     try {
       const token = localStorage.getItem('companyToken');
-      const res = await axios.get(`${BaseUrl}/inventory/company-inventory`, {
+      const query = new URLSearchParams(params).toString();
+      const url = `${BaseUrl}/inventory/company-inventory${query ? '?' + query : ''}`;
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.status === 200) {
-        setInventories(res.data.data);
+        const newData = res.data.data;
+        if (append) {
+          setInventories(prev => [...prev, ...newData]);
+        } else {
+          setInventories(newData);
+        }
+        setHasMore(newData.length === 10);
       } else {
         console.error("Failed to fetch inventories:", res.data.message);
       }
@@ -53,10 +64,12 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     }
   };
 
-  const fetchStats = async () => {
+  const fetchStats = async (params = {}) => {
     try {
       const token = localStorage.getItem('companyToken');
-      const res = await axios.get(`${BaseUrl}/inventory/dashboard/inventory/${company._id}`, {
+      const query = new URLSearchParams(params).toString();
+      const url = `${BaseUrl}/inventory/dashboard/inventory/${company._id}${query ? '?' + query : ''}`;
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.status === true) {
@@ -72,7 +85,8 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   };
 
   useEffect(() => {
-    fetchInventories();
+    const initialParams = { page: 1, limit: 10 };
+    fetchInventories(initialParams);
     fetchStats();
   }, []);
 
@@ -108,8 +122,10 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         supplier: '',
         image: null
       });
-      fetchInventories();
-      fetchStats();
+      setPage(1);
+      setHasMore(true);
+      fetchInventories({ ...filterParams, page: 1, limit: 10 });
+      fetchStats(filterParams);
       Swal.fire({
         icon: 'success',
         title: 'Success',
@@ -138,8 +154,10 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
       setShowEditModal(false);
-      fetchInventories();
-      fetchStats();
+      setPage(1);
+      setHasMore(true);
+      fetchInventories({ ...filterParams, page: 1, limit: 10 });
+      fetchStats(filterParams);
       Swal.fire({
         icon: 'success',
         title: 'Success',
@@ -171,8 +189,10 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
           await axios.delete(`${BaseUrl}/inventory/delete/${item._id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          fetchInventories();
-          fetchStats();
+          setPage(1);
+          setHasMore(true);
+          fetchInventories({ ...filterParams, page: 1, limit: 10 });
+          fetchStats(filterParams);
           Swal.fire({
             icon: 'success',
             title: 'Deleted!',
@@ -224,10 +244,53 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     setShowCreateModal(true);
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentInventories = inventories.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(inventories.length / itemsPerPage);
+  const handleFilterTypeChange = (e) => {
+    const type = e.target.value;
+    setFilterType(type);
+    const now = new Date();
+    if (type === 'month') {
+      setFromDate(new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]);
+      setToDate(new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]);
+    } else if (type === 'year') {
+      setFromDate(new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0]);
+      setToDate(new Date(now.getFullYear(), 11, 31).toISOString().split('T')[0]);
+    } else if (type === 'all') {
+      setFromDate('');
+      setToDate('');
+    }
+  };
+
+  const applyFilters = () => {
+    const params = {};
+    if (searchTerm) params.search = searchTerm;
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+    setFilterParams(params);
+    setPage(1);
+    setHasMore(true);
+    fetchInventories({ ...params, page: 1, limit: 10 });
+    fetchStats(params);
+  };
+
+  const clearFilters = () => {
+    setFilterType('all');
+    setSearchTerm('');
+    setFromDate('');
+    setToDate('');
+    setFilterParams({});
+    setPage(1);
+    setHasMore(true);
+    fetchInventories({ page: 1, limit: 10 });
+    fetchStats();
+  };
+
+  const handleShowMore = () => {
+    const newPage = page + 1;
+    setPage(newPage);
+    fetchInventories({ ...filterParams, page: newPage, limit: 10 }, true);
+  };
+
+  const currentInventories = inventories;
 
   const columns = [
     { key: 'image', label: 'Image' },
@@ -337,7 +400,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                   <div className="p-2 rounded-circle" style={{ backgroundColor: '#f0fdf4' }}>
                     <FaPlus size={16} style={{ color: '#22c55e' }} />
                   </div>
-                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>Monthly</span>
+                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>{fromDate && toDate ? 'Period' : 'Monthly'}</span>
                 </div>
                 <h3 className="fw-bold mb-1" style={{ fontSize: '1.5rem', color: '#1f2937' }}>{stats.monthlyItems}</h3>
                 <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Added</p>
@@ -379,6 +442,72 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Low Stock</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Filter Section */}
+        <div className="row g-3 mb-4">
+          <div className="col-md-3 col-sm-6">
+            <select 
+              className="form-select" 
+              value={filterType} 
+              onChange={handleFilterTypeChange}
+              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
+            >
+              <option value="all">All Time</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          {filterType === 'custom' && (
+            <>
+              <div className="col-md-3 col-sm-6">
+                <input 
+                  type="date" 
+                  className="form-control" 
+                  value={fromDate} 
+                  onChange={(e) => setFromDate(e.target.value)}
+                  style={{ borderRadius: '10px', fontSize: '0.875rem' }}
+                />
+              </div>
+              <div className="col-md-3 col-sm-6">
+                <input 
+                  type="date" 
+                  className="form-control" 
+                  value={toDate} 
+                  onChange={(e) => setToDate(e.target.value)}
+                  style={{ borderRadius: '10px', fontSize: '0.875rem' }}
+                />
+              </div>
+            </>
+          )}
+          <div className="col-md-3 col-sm-6">
+            <input 
+              type="text" 
+              className="form-control" 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name"
+              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
+            />
+          </div>
+          <div className="col-md-3 col-sm-12 d-flex gap-2">
+            <button 
+              className="btn btn-primary flex-grow-1" 
+              onClick={applyFilters}
+              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
+            >
+              <FaFilter className="me-2" size={14} />
+              Apply
+            </button>
+            <button 
+              className="btn btn-outline-secondary flex-grow-1" 
+              onClick={clearFilters}
+              style={{ borderRadius: '10px', fontSize: '0.875rem', borderColor: '#4f46e5', color: '#4f46e5' }}
+            >
+              Clear
+            </button>
           </div>
         </div>
       </div>
@@ -447,7 +576,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                             <div 
                               className="d-flex align-items-center justify-content-center" 
                               style={{ 
-                                width: "60px", 
+                                width: "60px",
                                 height: "60px", 
                                 borderRadius: "8px", 
                                 marginRight: "12px",
@@ -621,13 +750,12 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 </div>
               )}
 
-              {/* Pagination */}
-              {inventories.length > itemsPerPage && (
+              {/* Show More */}
+              {hasMore && (
                 <div className="d-flex justify-content-center align-items-center py-4" style={{ borderTop: '1px solid #f3f4f6' }}>
                   <button 
-                    className="btn btn-outline-primary me-2" 
-                    onClick={() => setCurrentPages(prev => Math.max(prev - 1, 1))} 
-                    disabled={currentPage === 1}
+                    className="btn btn-outline-primary" 
+                    onClick={handleShowMore}
                     style={{ 
                       borderRadius: '8px',
                       fontSize: '0.875rem',
@@ -635,23 +763,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                       color: '#4f46e5'
                     }}
                   >
-                    Previous
-                  </button>
-                  <span className="fw-medium mx-3" style={{ color: '#374151', fontSize: '0.875rem' }}>
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button 
-                    className="btn btn-outline-primary ms-2" 
-                    onClick={() => setCurrentPages(prev => Math.min(prev + 1, totalPages))} 
-                    disabled={currentPage === totalPages}
-                    style={{ 
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      borderColor: '#4f46e5',
-                      color: '#4f46e5'
-                    }}
-                  >
-                    Next
+                    Show More
                   </button>
                 </div>
               )}
