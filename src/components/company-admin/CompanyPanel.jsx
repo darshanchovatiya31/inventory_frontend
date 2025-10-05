@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import CompanyDashboard from './CompanyDashboard';
 import Inventorys from './Inventorys';
+import Sales from './Sales';
 import ProfileSetting from './ProfileSetting';
 
 const CompanyPanel = () => {
@@ -35,6 +36,8 @@ const CompanyPanel = () => {
         return <CompanyDashboard setCurrentPage={setCurrentPage} toggleSidebar={toggleSidebar} />;
       case 'Inventorys':
         return <Inventorys setCurrentPage={setCurrentPage} toggleSidebar={toggleSidebar} isOpen={isOpen}/>;
+      case 'Sales':
+        return <Sales setCurrentPage={setCurrentPage} toggleSidebar={toggleSidebar} isOpen={isOpen}/>;
       case 'Account Setting':
         return <ProfileSetting setCurrentPage={setCurrentPage} toggleSidebar={toggleSidebar} />;
       default:

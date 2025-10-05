@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { FaBars, FaTachometerAlt, FaSignOutAlt} from 'react-icons/fa';
+import { FaBars, FaTachometerAlt, FaSignOutAlt, FaShoppingCart} from 'react-icons/fa';
 import { MdOutlineInventory } from "react-icons/md";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
@@ -44,6 +44,7 @@ const handleItemClick = (name) => {
 const sidebarItems = [
   { name: 'Dashboard', icon: <FaTachometerAlt /> },
   { name: 'Inventorys', icon: <MdOutlineInventory /> },
+  { name: 'Sales', icon: <FaShoppingCart /> },
   { name: 'Account Setting', icon: <IoMdSettings /> },
   { name: 'Logout', icon: <FaSignOutAlt /> },
 ];
