@@ -1,9 +1,10 @@
+// Updated Inventorys component
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import Swal from 'sweetalert2';
 import { BaseUrl } from "../service/Uri";
-import { FaBox, FaDownload, FaEdit, FaEye, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaBox, FaDownload, FaEdit, FaEye, FaTrash, FaPlus, FaSearch, FaFilter, FaHistory, FaExchangeAlt } from 'react-icons/fa';
 import CommonHeader from './CommonHeader';
 
 const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
@@ -15,7 +16,17 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [stockHistory, setStockHistory] = useState([]);
+  const [adjustFormData, setAdjustFormData] = useState({
+    type: 'add',
+    quantity: 0,
+    price: 0,
+    supplier: '',
+    notes: ''
+  });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -84,6 +95,22 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     }
   };
 
+  const fetchStockHistory = async (inventoryId) => {
+    try {
+      const token = localStorage.getItem('companyToken');
+      const res = await axios.get(`${BaseUrl}/inventory/history/${inventoryId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.status === 200) {
+        setStockHistory(res.data.data);
+      } else {
+        console.error("Failed to fetch stock history:", res.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching stock history:", error);
+    }
+  };
+
   useEffect(() => {
     const initialParams = { page: 1, limit: 10 };
     fetchInventories(initialParams);
@@ -93,6 +120,11 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleAdjustInputChange = (e) => {
+    const { name, value } = e.target;
+    setAdjustFormData({ ...adjustFormData, [name]: value });
   };
 
   const handleFileChange = (e) => {
@@ -173,6 +205,39 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     }
   };
 
+  const handleAdjust = async () => {
+    try {
+      const token = localStorage.getItem('companyToken');
+      await axios.post(`${BaseUrl}/inventory/adjustment`, { ...adjustFormData, inventoryId: selectedItem._id }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setShowAdjustModal(false);
+      setAdjustFormData({
+        type: 'add',
+        quantity: 0,
+        price: 0,
+        supplier: '',
+        notes: ''
+      });
+      setPage(1);
+      setHasMore(true);
+      fetchInventories({ ...filterParams, page: 1, limit: 10 });
+      fetchStats(filterParams);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Stock adjusted successfully!',
+      });
+    } catch (error) {
+      console.error("Error adjusting stock:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to adjust stock.',
+      });
+    }
+  };
+
   const handleDelete = async (item) => {
     Swal.fire({
       title: `Are you sure you want to delete ${item.name}?`,
@@ -228,6 +293,17 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const openViewModal = (item) => {
     setSelectedItem(item);
     setShowViewModal(true);
+  };
+
+  const openHistoryModal = (item) => {
+    setSelectedItem(item);
+    fetchStockHistory(item._id);
+    setShowHistoryModal(true);
+  };
+
+  const openAdjustModal = (item) => {
+    setSelectedItem(item);
+    setShowAdjustModal(true);
   };
 
   const openCreateModal = () => {
@@ -619,13 +695,53 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                           </div>
                         </div>
                         
-                        <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
                           <span 
                             className={`badge ${i.quantity > 10 ? 'bg-success' : i.quantity > 0 ? 'bg-warning' : 'bg-danger'}`}
                             style={{ fontSize: '0.75rem' }}
                           >
                             {i.status || 'Active'}
                           </span>
+                          <div className="d-flex gap-1">
+                            <button 
+                              className="btn btn-sm btn-outline-info d-flex align-items-center justify-content-center" 
+                              onClick={() => openHistoryModal(i)}
+                              style={{ borderRadius: '6px', padding: '8px' }}
+                            >
+                              <FaHistory size={12} />
+                            </button>
+                            <button 
+                              className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center" 
+                              onClick={() => openAdjustModal(i)}
+                              style={{ borderRadius: '6px', padding: '8px' }}
+                            >
+                              <FaExchangeAlt size={12} />
+                            </button>
+                             <button 
+                              className="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" 
+                              onClick={() => openViewModal(i)}
+                              style={{ borderRadius: '6px', padding: '8px' }}
+                            >
+                              <FaEye size={12} />
+                            </button>
+                            <button 
+                              className="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center" 
+                              onClick={() => openEditModal(i)}
+                              style={{ borderRadius: '6px', padding: '8px' }}
+                            >
+                              <FaEdit size={12} />
+                            </button>
+                            <button 
+                              className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center" 
+                              onClick={() => handleDelete(i)}
+                              style={{ borderRadius: '6px', padding: '8px' }}
+                            >
+                              <FaTrash size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* <div className="d-flex justify-content-between align-items-center">
                           <div className="d-flex gap-1">
                             <button 
                               className="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" 
@@ -649,7 +765,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                               <FaTrash size={12} />
                             </button>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ))}
@@ -675,6 +791,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                           </th>
                         ))}
                         <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Created At</th>
+                        <th className="fw-semibold px-3 py-3 text-center" style={{ minWidth: "100px", color: '#374151', fontSize: '0.875rem' }}>Stock Mgmt</th>
                         <th className="fw-semibold px-3 py-3 text-end" style={{ minWidth: "150px", color: '#374151', fontSize: '0.875rem' }}>Actions</th>
                       </tr>
                     </thead>
@@ -717,6 +834,24 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                           ))}
                           <td className="py-3 px-3" style={{ verticalAlign: 'middle', color: '#6b7280', fontSize: '0.875rem' }}>
                             {new Date(i.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-3 text-center" style={{ verticalAlign: 'middle' }}>
+                            <div className="d-flex gap-1 justify-content-center">
+                              <button 
+                                className="btn btn-sm btn-outline-info d-flex align-items-center justify-content-center" 
+                                onClick={() => openHistoryModal(i)}
+                                style={{ borderRadius: '6px', padding: '8px' }}
+                              >
+                                <FaHistory size={12} />
+                              </button>
+                              <button 
+                                className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center" 
+                                onClick={() => openAdjustModal(i)}
+                                style={{ borderRadius: '6px', padding: '8px' }}
+                              >
+                                <FaExchangeAlt size={12} />
+                              </button>
+                            </div>
                           </td>
                           <td className="py-3 px-3 text-end" style={{ verticalAlign: 'middle' }}>
                             <div className="d-flex gap-1 justify-content-end">
@@ -1136,6 +1271,211 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 >
                   <FaEdit className="me-2" size={12} />
                   Edit Item
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {showHistoryModal && selectedItem && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div className="modal-content" style={{ borderRadius: '12px', border: 'none' }}>
+              <div className="modal-header" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <h5 className="modal-title fw-bold" style={{ color: '#1f2937' }}>Stock History for {selectedItem.name}</h5>
+                <button type="button" className="btn-close" onClick={() => setShowHistoryModal(false)}></button>
+              </div>
+              <div className="modal-body" style={{ padding: '1.5rem' }}>
+                {stockHistory.length === 0 ? (
+                  <div className="text-center py-4">
+                    <FaHistory size={48} className="text-muted mb-3" />
+                    <p className="text-muted">No stock adjustments found</p>
+                  </div>
+                ) : (
+                  <>
+                    {isMobile ? (
+                      <div className="d-flex flex-column gap-3">
+                        {stockHistory.map((adj, idx) => (
+                          <div 
+                            key={idx} 
+                            className="card border-0" 
+                            style={{ 
+                              borderRadius: '10px', 
+                              backgroundColor: '#fafafa',
+                              border: '1px solid #e5e7eb'
+                            }}
+                          >
+                            <div className="card-body p-3">
+                              <div className="d-flex justify-content-between align-items-center mb-3">
+                                <span className={`badge ${adj.type === 'add' ? 'bg-success' : 'bg-danger'}`}>
+                                  {adj.type.toUpperCase()}
+                                </span>
+                                <span className="text-muted" style={{ fontSize: '0.875rem' }}>
+                                  {new Date(adj.createdAt).toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="row g-2">
+                                <div className="col-6">
+                                  <small className="text-muted d-block">Quantity</small>
+                                  <span style={{ fontSize: '0.875rem' }}>{adj.quantity}</span>
+                                </div>
+                                <div className="col-6">
+                                  <small className="text-muted d-block">Price</small>
+                                  <span style={{ fontSize: '0.875rem' }}>₹{adj.price}</span>
+                                </div>
+                                {adj.supplier && <div className="col-12">
+                                  <small className="text-muted d-block">Supplier</small>
+                                  <span style={{ fontSize: '0.875rem' }}>{adj.supplier || '—'}</span>
+                                </div> }
+                                { adj.notes && <div className="col-12">
+                                  <small className="text-muted d-block">Notes</small>
+                                  <span style={{ fontSize: '0.875rem' }}>{adj.notes || '—'}</span>
+                                </div>}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="table-responsive">
+                        <table className="table table-hover">
+                          <thead style={{ backgroundColor: '#f8fafc' }}>
+                            <tr>
+                              <th style={{ fontSize: '0.875rem' }}>Type</th>
+                              <th style={{ fontSize: '0.875rem' }}>Quantity</th>
+                              <th style={{ fontSize: '0.875rem' }}>Price</th>
+                              <th style={{ fontSize: '0.875rem' }}>Supplier</th>
+                              <th style={{ fontSize: '0.875rem' }}>Notes</th>
+                              <th style={{ fontSize: '0.875rem' }}>Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {stockHistory.map((adj, idx) => (
+                              <tr key={idx}>
+                                <td>
+                                  <span className={`badge ${adj.type === 'add' ? 'bg-success' : 'bg-danger'}`}>
+                                    {adj.type.toUpperCase()}
+                                  </span>
+                                </td>
+                                <td>{adj.quantity}</td>
+                                <td>₹{adj.price}</td>
+                                <td>{adj.supplier || '—'}</td>
+                                <td>{adj.notes || '—'}</td>
+                                <td>{new Date(adj.createdAt).toLocaleString()}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="modal-footer" style={{ borderTop: '1px solid #e5e7eb', padding: '1rem 1.5rem' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary" 
+                  onClick={() => setShowHistoryModal(false)}
+                  style={{ borderRadius: '8px', fontSize: '0.875rem' }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Adjust Modal */}
+      {showAdjustModal && selectedItem && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div className="modal-content" style={{ borderRadius: '12px', border: 'none' }}>
+              <div className="modal-header" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <h5 className="modal-title fw-bold" style={{ color: '#1f2937' }}>Adjust Stock for {selectedItem.name}</h5>
+                <button type="button" className="btn-close" onClick={() => setShowAdjustModal(false)}></button>
+              </div>
+              <div className="modal-body" style={{ padding: '1.5rem' }}>
+                <form>
+                  <div className="mb-3">
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Type</label>
+                    <select 
+                      className="form-select" 
+                      name="type" 
+                      value={adjustFormData.type} 
+                      onChange={handleAdjustInputChange}
+                      style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                    >
+                      <option value="add">Add</option>
+                      <option value="subtract">Subtract</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Quantity</label>
+                    <input 
+                      type="number" 
+                      className="form-control" 
+                      name="quantity" 
+                      value={adjustFormData.quantity} 
+                      onChange={handleAdjustInputChange}
+                      min="1"
+                      style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Price per Unit</label>
+                    <input 
+                      type="number" 
+                      className="form-control" 
+                      name="price" 
+                      value={adjustFormData.price} 
+                      onChange={handleAdjustInputChange}
+                      min="0"
+                      style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Supplier</label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      name="supplier" 
+                      value={adjustFormData.supplier} 
+                      onChange={handleAdjustInputChange}
+                      style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Notes</label>
+                    <textarea 
+                      className="form-control" 
+                      name="notes" 
+                      value={adjustFormData.notes} 
+                      onChange={handleAdjustInputChange}
+                      rows="3"
+                      style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                    ></textarea>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer" style={{ borderTop: '1px solid #e5e7eb', padding: '1rem 1.5rem' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary me-2" 
+                  onClick={() => setShowAdjustModal(false)}
+                  style={{ borderRadius: '8px', fontSize: '0.875rem' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary" 
+                  onClick={handleAdjust}
+                  style={{ borderRadius: '8px', backgroundColor: '#4f46e5', border: 'none', fontSize: '0.875rem' }}
+                >
+                  Adjust Stock
                 </button>
               </div>
             </div>
