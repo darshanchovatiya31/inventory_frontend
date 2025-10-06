@@ -41,7 +41,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
     paymentStatus: 'completed',
     transactionId: '',
     notes: '',
-    soldBy: '',
+    paymentReceivedBy: '',
     saleDate: new Date().toISOString().split('T')[0]
   });
 
@@ -141,7 +141,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         paymentStatus: 'completed',
         transactionId: '',
         notes: '',
-        soldBy: '',
+        paymentReceivedBy: '',
         saleDate: new Date().toISOString().split('T')[0]
       });
       fetchSales();
@@ -239,7 +239,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       paymentStatus: sale.paymentStatus,
       transactionId: sale.transactionId || '',
       notes: sale.notes || '',
-      soldBy: sale.soldBy || '',
+      paymentReceivedBy: sale.paymentReceivedBy || '',
       saleDate: new Date(sale.saleDate).toISOString().split('T')[0]
     });
     setShowEditModal(true);
@@ -262,7 +262,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       paymentStatus: 'completed',
       transactionId: '',
       notes: '',
-      soldBy: '',
+      paymentReceivedBy: '',
       saleDate: new Date().toISOString().split('T')[0]
     });
     setShowCreateModal(true);
@@ -274,7 +274,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const totalPages = Math.ceil(sales.length / itemsPerPage);
 
   const downloadCSV = () => {
-    const headers = ['Customer Name', 'Product', 'SKU', 'Quantity', 'Unit Price', 'Total Amount', 'Payment Method', 'Sale Date', 'Sold By'];
+    const headers = ['Customer Name', 'Product', 'SKU', 'Quantity', 'Unit Price', 'Total Amount', 'Payment Method', 'Sale Date', 'Payment Received By'];
     const rows = sales.map(s => [
       s.customerName,
       s.inventoryId?.name || 'N/A',
@@ -284,7 +284,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       s.totalAmount,
       s.paymentMethod,
       new Date(s.saleDate).toLocaleDateString(),
-      s.soldBy || 'N/A'
+      s.paymentReceivedBy || 'N/A'
     ]);
     const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

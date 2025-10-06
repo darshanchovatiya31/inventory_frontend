@@ -69,14 +69,15 @@ export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, han
                     />
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Sold By</label>
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Payment Received By</label>
                     <input 
                       type="text" 
                       className="form-control" 
-                      name="soldBy" 
-                      value={formData.soldBy} 
+                      name="paymentReceivedBy" 
+                      value={formData.paymentReceivedBy} 
                       onChange={handleInputChange}
                       style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                      required
                     />
                   </div>
                 </div>
@@ -290,12 +291,12 @@ export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handl
                     />
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Sold By</label>
+                    <label className="form-label fw-medium" style={{ color: '#374151', fontSize: '0.875rem' }}>Payment Received By</label>
                     <input 
                       type="text" 
                       className="form-control" 
-                      name="soldBy" 
-                      value={formData.soldBy} 
+                      name="paymentReceivedBy" 
+                      value={formData.paymentReceivedBy} 
                       onChange={handleInputChange}
                       style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
                     />
@@ -537,11 +538,11 @@ export const ViewSaleModal = ({ show, onHide, selectedSale }) => {
                   </div>
                 )}
                 
-                {selectedSale.soldBy && (
+                {selectedSale.paymentReceivedBy && (
                   <div className="col-6">
                     <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                      <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Sold By</label>
-                      <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.soldBy}</span>
+                      <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Payment Received By</label>
+                      <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.paymentReceivedBy}</span>
                     </div>
                   </div>
                 )}
