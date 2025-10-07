@@ -141,10 +141,11 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         totalAmount: formData.quantitySold * formData.unitPrice
       };
 
-      await axios.post(`${BaseUrl}/sales/create/${company._id}`, data, {
+      const res = await axios.post(`${BaseUrl}/sales/create/${company._id}`, data, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
+      if (res.data.data !== null) {
       setShowCreateModal(false);
       setFormData({
         inventoryId: '',
@@ -165,17 +166,36 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       fetchSales({ ...filterParams, page: 1, limit: 10 });
       fetchStats(filterParams);
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Sale created successfully!',
-      });
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Sale created successfully!',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+              });
+      } else {
+      Swal.fire({
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'error',
+                title: res.data.message || 'Failed to create sale.',
+                showConfirmButton: false,
+                timer: 4000, // auto close after 3 seconds
+                timerProgressBar: true,
+              });
+      }
     } catch (error) {
       console.error("Error creating sale:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Failed to create sale.',
-      });
+     Swal.fire({
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'error',
+                title: 'Failed to create sale.',
+                showConfirmButton: false,
+                timer: 4000, // auto close after 3 seconds
+                timerProgressBar: true,
+              });
     }
   };
 
@@ -187,27 +207,47 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         totalAmount: formData.quantitySold * formData.unitPrice
       };
 
-      await axios.put(`${BaseUrl}/sales/update/${selectedSale._id}`, data, {
+      const res = await axios.put(`${BaseUrl}/sales/update/${selectedSale._id}`, data, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
+      if (res.data.data !== null) {
       setShowEditModal(false);
       setPage(1);
       setHasMore(true);
       fetchSales({ ...filterParams, page: 1, limit: 10 });
       fetchStats(filterParams);
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Sale updated successfully!',
-      });
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Sale updated successfully!',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+              });
+      } else {
+      Swal.fire({
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'error',
+                title: res.data.message || 'Failed to update sale.',
+                showConfirmButton: false,
+                timer: 4000, // auto close after 3 seconds
+                timerProgressBar: true,
+              });
+      }
     } catch (error) {
       console.error("Error updating sale:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Failed to update sale.',
-      });
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'error',
+                title: 'Failed to update sale.',
+                showConfirmButton: false,
+                timer: 4000, // auto close after 3 seconds
+                timerProgressBar: true,
+              });
     }
   };
 
@@ -224,7 +264,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       if (result.isConfirmed) {
         try {
           const token = localStorage.getItem('companyToken');
-          await axios.delete(`${BaseUrl}/sales/delete/${sale._id}`, {
+          const res = await axios.delete(`${BaseUrl}/sales/delete/${sale._id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setPage(1);
@@ -232,17 +272,25 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
           fetchSales({ ...filterParams, page: 1, limit: 10 });
           fetchStats(filterParams);
           Swal.fire({
-            icon: 'success',
-            title: 'Cancelled!',
-            text: `Sale for ${sale.customerName} has been cancelled.`,
-          });
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title:  `Sale for ${sale.customerName} has been cancelled.`,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+              });
         } catch (error) {
           console.error("Error cancelling sale:", error);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to cancel sale.',
-          });
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'error',
+                title: 'Failed to cancel sale.',
+                showConfirmButton: false,
+                timer: 3000, // auto close after 3 seconds
+                timerProgressBar: true,
+              });
         }
       }
     });

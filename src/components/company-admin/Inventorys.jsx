@@ -140,35 +140,56 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       });
       if (formData.image) data.append('image', formData.image);
 
-      await axios.post(`${BaseUrl}/inventory/create/${company._id}`, data, {
+      const res = await axios.post(`${BaseUrl}/inventory/create/${company._id}`, data, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
-      setShowCreateModal(false);
-      setFormData({
-        name: '',
-        description: '',
-        sku: '',
-        quantity: 0,
-        price: 0,
-        category: '',
-        supplier: '',
-        image: null
-      });
-      setPage(1);
-      setHasMore(true);
-      fetchInventories({ ...filterParams, page: 1, limit: 10 });
-      fetchStats(filterParams);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Inventory item created successfully!',
-      });
+
+     if (res.data.data !== null) {
+       setShowCreateModal(false);
+        setFormData({
+          name: '',
+          description: '',
+          sku: '',
+          quantity: 0,
+          price: 0,
+          category: '',
+          supplier: '',
+          image: null
+        });
+        setPage(1);
+        setHasMore(true);
+        fetchInventories({ ...filterParams, page: 1, limit: 10 });
+        fetchStats(filterParams);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Inventory item created successfully!',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: 'top-end', // top-right corner
+          icon: 'error',
+          title: res.data.message || 'Failed to create inventory item.',
+          showConfirmButton: false,
+          timer: 4000, // auto close after 3 seconds
+          timerProgressBar: true,
+        });
+      }
     } catch (error) {
       console.error("Error creating inventory:", error);
-      Swal.fire({
+       Swal.fire({
+        toast: true,
+        position: 'top-end', // top-right corner
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to create inventory item.',
+        title: 'Failed to create inventory item.',
+        showConfirmButton: false,
+        timer: 3000, // auto close after 3 seconds
+        timerProgressBar: true,
       });
     }
   };
@@ -182,25 +203,45 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       });
       if (formData.image) data.append('image', formData.image);
 
-      await axios.put(`${BaseUrl}/inventory/update/${selectedItem._id}`, data, {
+      const res = await axios.put(`${BaseUrl}/inventory/update/${selectedItem._id}`, data, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
+       if (res.data.data !== null) {
       setShowEditModal(false);
       setPage(1);
       setHasMore(true);
       fetchInventories({ ...filterParams, page: 1, limit: 10 });
       fetchStats(filterParams);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Inventory item updated successfully!',
-      });
+       Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Inventory item updated successfully!',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: 'top-end', // top-right corner
+          icon: 'error',
+          title: res.data.message || 'Failed to update inventory item.',
+          showConfirmButton: false,
+          timer: 4000, // auto close after 3 seconds
+          timerProgressBar: true,
+        });
+      }
     } catch (error) {
       console.error("Error updating inventory:", error);
-      Swal.fire({
+        Swal.fire({
+        toast: true,
+        position: 'top-end', // top-right corner
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to update inventory item.',
+        title: 'Failed to update inventory item.',
+        showConfirmButton: false,
+        timer: 3000, // auto close after 3 seconds
+        timerProgressBar: true,
       });
     }
   };
@@ -208,9 +249,10 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const handleAdjust = async () => {
     try {
       const token = localStorage.getItem('companyToken');
-      await axios.post(`${BaseUrl}/inventory/adjustment`, { ...adjustFormData, inventoryId: selectedItem._id }, {
+      const res = await axios.post(`${BaseUrl}/inventory/adjustment`, { ...adjustFormData, inventoryId: selectedItem._id }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      if (res.data.data !== null) {
       setShowAdjustModal(false);
       setAdjustFormData({
         type: 'add',
@@ -223,17 +265,36 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       setHasMore(true);
       fetchInventories({ ...filterParams, page: 1, limit: 10 });
       fetchStats(filterParams);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Stock adjusted successfully!',
-      });
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Stock adjusted successfully!',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: 'top-end', // top-right corner
+          icon: 'error',
+          title: res.data.message || 'Failed to adjust stock.',
+          showConfirmButton: false,
+          timer: 4000, // auto close after 3 seconds
+          timerProgressBar: true,
+        });
+      }
     } catch (error) {
       console.error("Error adjusting stock:", error);
-      Swal.fire({
+        Swal.fire({
+        toast: true,
+        position: 'top-end', // top-right corner
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to adjust stock.',
+        title: 'Failed to adjust stock.',
+        showConfirmButton: false,
+        timer: 3000, // auto close after 3 seconds
+        timerProgressBar: true,
       });
     }
   };
@@ -259,9 +320,13 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
           fetchInventories({ ...filterParams, page: 1, limit: 10 });
           fetchStats(filterParams);
           Swal.fire({
+            toast: true,
+            position: 'top-end',
             icon: 'success',
-            title: 'Deleted!',
-            text: `${item.name} has been deleted.`,
+            title: `${item.name} has been deleted.`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
           });
         } catch (error) {
           console.error("Error deleting inventory:", error);
@@ -927,6 +992,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                       value={formData.name} 
                       onChange={handleInputChange}
                       style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                      required
                     />
                   </div>
                   <div className="mb-3">
@@ -950,6 +1016,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                         value={formData.sku} 
                         onChange={handleInputChange}
                         style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                        required
                       />
                     </div>
                     <div className="col-md-6 mb-3">
@@ -961,6 +1028,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                         value={formData.quantity} 
                         onChange={handleInputChange}
                         style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                        required
                       />
                     </div>
                   </div>
@@ -974,6 +1042,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                         value={formData.price} 
                         onChange={handleInputChange}
                         style={{ borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.875rem' }}
+                        required
                       />
                     </div>
                     <div className="col-md-6 mb-3">
@@ -1175,7 +1244,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 {selectedItem.image && (
                   <div className="text-center mb-4">
                     <img 
-                      src={`${BaseUrl}/${selectedItem.image}`} 
+                      src={`${selectedItem.image}`} 
                       alt="Product" 
                       className="img-fluid rounded" 
                       style={{ 
