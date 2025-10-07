@@ -303,7 +303,7 @@ const generateCompanyUrl = (name) => {
                   <tr key={c._id} className="table-row" style={{ animationDelay: `${index * 0.1}s`,}}>
                     <td className="border-0 py-4 px-xxl-2">
                       <div className="logo-container">
-                        <img src={`${BaseUrl}/${c.logo}`} alt={c.name} className="company-logo"
+                        <img src={`${c.logo}`} alt={c.name} className="company-logo"
                           style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '12px', border: '2px solid #f8f9fa', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease',}}
                           onMouseEnter={(e) => { e.target.style.transform = 'scale(1.1)'; e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)';}}
                           onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';}}
@@ -422,7 +422,7 @@ const generateCompanyUrl = (name) => {
             <input type="file" className="form-control" name="logo" accept=".jpg,.jpeg,.png" onChange={handleUpdateChange} />
             {currentCompany?.logo && (
               <div className="mt-2">
-                <img src={`${BaseUrl}/${currentCompany.logo}`} alt="Current Logo" style={{ width: '60px', borderRadius: '6px' }} />
+                <img src={`${currentCompany.logo}`} alt="Current Logo" style={{ width: '60px', borderRadius: '6px' }} />
               </div>
             )}
           </div>

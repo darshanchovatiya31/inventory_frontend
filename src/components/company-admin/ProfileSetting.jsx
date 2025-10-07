@@ -128,7 +128,7 @@ const handlePasswordSubmit = async (e) => {
                 <input className="form-control" type="file" accept="image/*" name="logo" onChange={handleChange} />
                 {company.logo && (
                   <div className="mt-2">
-                    <img src={`${BaseUrl}/${company.logo}`} alt="Current Logo" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
+                    <img src={`${company.logo}`} alt="Current Logo" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
                   </div>
                 )}
               </div>

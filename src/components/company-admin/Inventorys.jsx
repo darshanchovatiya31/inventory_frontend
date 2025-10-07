@@ -803,7 +803,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                               {col.key === 'image' ? (
                                 i.image ? (
                                   <img 
-                                    src={`${BaseUrl}/${i.image}`} 
+                                    src={`${i.image}`} 
                                     alt="Product" 
                                     style={{ 
                                       width: "50px", 

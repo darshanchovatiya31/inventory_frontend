@@ -42,7 +42,7 @@ const CommonHeader = ({ title, company, toggleSidebar, setCurrentPage }) => {
       </div>
       <div className="dropdown">
         <div className="d-flex align-items-center gap-2 cursor-pointer" role="button" data-bs-toggle="dropdown">
-          <img src={`${BaseUrl}/${company.logo}`} alt="logo" className="rounded-circle border" style={{ width: "40px", height: "40px", objectFit: "cover" }}/>
+          <img src={`${company.logo}`} alt="logo" className="rounded-circle border" style={{ width: "40px", height: "40px", objectFit: "cover" }}/>
           <span className="fw-bold d-none d-sm-block">{company.name}</span>
         </div>
         <ul className="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
