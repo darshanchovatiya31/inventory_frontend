@@ -6,6 +6,7 @@ import CommonHeader from './CommonHeader';
 const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
   const CompanyInfo = JSON.parse(localStorage.getItem('company'));
   const token = localStorage.getItem('companyToken');
+  const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({ 
     totalItems: 0, 
     totalValue: 0,
@@ -18,6 +19,7 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(`${BaseUrl}/company/dashboard/company`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -26,6 +28,8 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
         }
       } catch (error) {
         console.error("Dashboard data fetch error:", error);
+      } finally {
+        setLoading(false);
       }
     };
     if (CompanyInfo?._id) fetchDashboardData();
@@ -42,7 +46,13 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
     <div className="container-fluid p-0">
       <CommonHeader title="Dashboard" company={CompanyInfo} toggleSidebar={toggleSidebar} setCurrentPage={setCurrentPage} />
 
-      <div className="row g-4 mt-3">
+      {loading ? (
+        <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
+          <div className="spinner-border" style={{ color: '#4f46e5' }} role="status"></div>
+          <p className="mt-3 text-muted">Loading dashboard...</p>
+        </div>
+      ) : (
+        <div className="row g-4 mt-3">
         {/* Inventory Cards */}
         <div className="col-md-6">
           <div className="row m-0 mb-2">
@@ -118,6 +128,7 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

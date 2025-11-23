@@ -28,7 +28,19 @@ export const PrivateRoute = ({ children }) => {
     verifyToken();
   }, []);
 
-  if (isValid === null) return <div>Loading...</div>;
+  if (isValid === null) return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '100vh',
+      width: '100vw'
+    }}>
+      <div className="spinner-border" style={{ color: '#4f46e5', width: '3rem', height: '3rem' }} role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  );
   return isValid ? children : <Navigate to="/admin/login" />;
 };
 
@@ -57,6 +69,18 @@ export const CompanyPrivateRoute = ({ children }) => {
     verifyToken();
   }, []);
 
-  if (isValid === null) return <div>Loading...</div>;
+  if (isValid === null) return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '100vh',
+      width: '100vw'
+    }}>
+      <div className="spinner-border" style={{ color: '#4f46e5', width: '3rem', height: '3rem' }} role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  );
   return isValid ? children : <Navigate to="/" />;
 };
