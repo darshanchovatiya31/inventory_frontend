@@ -9,20 +9,57 @@ export const PrivateRoute = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('adminToken');
-      if (!token) return setIsValid(false);
+      const adminData = localStorage.getItem('admin');
+      
+      if (!token) {
+        setIsValid(false);
+        return;
+      }
 
-      try {
-        const res = await axios.get(`${BaseUrl}/super-admin/verify-token`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data.status === 200) {
-          localStorage.setItem('admin', JSON.stringify(res.data.data));
-          setIsValid(true);
-        } else {
+      // If we have cached admin data, use it temporarily while verifying
+      if (adminData) {
+        try {
+          const res = await axios.get(`${BaseUrl}/super-admin/verify-token`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 5000, // 5 second timeout
+          });
+          if (res.data.status === 200) {
+            localStorage.setItem('admin', JSON.stringify(res.data.data));
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            setIsValid(false);
+          }
+        } catch (err) {
+          // If network error but we have cached data, allow access temporarily
+          // Token will be verified on next successful API call
+          if (adminData && (err.code === 'ECONNABORTED' || err.message.includes('timeout') || !navigator.onLine)) {
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            setIsValid(false);
+          }
+        }
+      } else {
+        // No cached data, must verify
+        try {
+          const res = await axios.get(`${BaseUrl}/super-admin/verify-token`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 5000,
+          });
+          if (res.data.status === 200) {
+            localStorage.setItem('admin', JSON.stringify(res.data.data));
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('adminToken');
+            setIsValid(false);
+          }
+        } catch (err) {
+          localStorage.removeItem('adminToken');
           setIsValid(false);
         }
-      } catch (err) {
-        setIsValid(false);
       }
     };
     verifyToken();
@@ -50,20 +87,57 @@ export const CompanyPrivateRoute = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('companyToken');
-      if (!token) return setIsValid(false);
+      const companyData = localStorage.getItem('company');
+      
+      if (!token) {
+        setIsValid(false);
+        return;
+      }
 
-      try {
-        const res = await axios.get(`${BaseUrl}/company/verify-company`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data.status === 200) {
-          setIsValid(true);
-          localStorage.setItem('company', JSON.stringify(res.data.data));
-        } else {
+      // If we have cached company data, use it temporarily while verifying
+      if (companyData) {
+        try {
+          const res = await axios.get(`${BaseUrl}/company/verify-company`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 5000, // 5 second timeout
+          });
+          if (res.data.status === 200) {
+            localStorage.setItem('company', JSON.stringify(res.data.data));
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('companyToken');
+            localStorage.removeItem('company');
+            setIsValid(false);
+          }
+        } catch (err) {
+          // If network error but we have cached data, allow access temporarily
+          // Token will be verified on next successful API call
+          if (companyData && (err.code === 'ECONNABORTED' || err.message.includes('timeout') || !navigator.onLine)) {
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('companyToken');
+            localStorage.removeItem('company');
+            setIsValid(false);
+          }
+        }
+      } else {
+        // No cached data, must verify
+        try {
+          const res = await axios.get(`${BaseUrl}/company/verify-company`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 5000,
+          });
+          if (res.data.status === 200) {
+            localStorage.setItem('company', JSON.stringify(res.data.data));
+            setIsValid(true);
+          } else {
+            localStorage.removeItem('companyToken');
+            setIsValid(false);
+          }
+        } catch (err) {
+          localStorage.removeItem('companyToken');
           setIsValid(false);
         }
-      } catch (err) {
-        setIsValid(false);
       }
     };
     verifyToken();
