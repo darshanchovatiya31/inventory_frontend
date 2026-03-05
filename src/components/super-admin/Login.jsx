@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaShieldAlt } from 'react-icons/fa';
 import { BaseUrl } from "../service/Uri";
+import './AdminLogin.css';
 
 const Login = () => {
   const [emailId, setEmailId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    setLoading(true);
 
     try {
       const res = await axios.post(`${BaseUrl}/super-admin/signin`, {emailId,password});      
@@ -30,27 +33,40 @@ const Login = () => {
       }
     } catch (error) {
       setErrorMsg(error.response?.data?.message || 'Login failed. Try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-container d-flex align-items-center justify-content-center">
-      <div className="login-card shadow-lg animated fadeInDown">
-        <div className="card-header text-white text-center py-3 gradient-header">
-          <h3 className="mb-0">🔐 Admin Login</h3>
+    <div className="admin-login-container">
+      <div className="admin-login-card">
+        <div className="admin-login-header">
+          <div className="admin-login-icon">
+            <FaShieldAlt />
+          </div>
+          <h2 className="admin-login-title">Admin Login</h2>
+          <p className="admin-login-subtitle">Sign in to access the admin panel</p>
         </div>
-        <div className="card-body p-4">
-          {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
+
+        <div className="admin-login-body">
+          {errorMsg && (
+            <div className="admin-login-error">
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <div className="input-group login-input-group">
-                <span className="input-group-text bg-white text-primary">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Email Address</label>
+              <div className="admin-input-wrapper">
+                <span className="admin-input-icon">
                   <FaEnvelope />
                 </span>
                 <input
                   type="email"
-                  className="form-control"
-                  placeholder="Email address"
+                  className="admin-form-input"
+                  placeholder="Enter your email address"
                   value={emailId}
                   onChange={(e) => setEmailId(e.target.value)}
                   required
@@ -58,22 +74,23 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="mb-4">
-              <div className="input-group login-input-group">
-                <span className="input-group-text bg-white text-primary">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Password</label>
+              <div className="admin-input-wrapper">
+                <span className="admin-input-icon">
                   <FaLock />
                 </span>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="form-control"
-                  placeholder="Password"
+                  className="admin-form-input"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button
-                  className="btn toggle-password"
                   type="button"
+                  className="admin-password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -81,11 +98,20 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="d-grid">
-              <button type="submit" className="btn btn-primary btn-lg glow-on-hover">
-                Login
-              </button>
-            </div>
+            <button 
+              type="submit" 
+              className="admin-login-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="admin-spinner"></span>
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
           </form>
         </div>
       </div>

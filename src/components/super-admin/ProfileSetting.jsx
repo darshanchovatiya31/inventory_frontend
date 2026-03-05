@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BaseUrl } from '../service/Uri';
+import './AdminProfileSetting.css';
 
 const ProfileSetting = () => {
   const storedAdmin = JSON.parse(localStorage.getItem('admin'));
@@ -34,28 +35,54 @@ const ProfileSetting = () => {
       setPassword('');
     } catch (error) {
       console.error("Update failed:", error);
-      setError(err?.response?.data?.message || "Something went wrong while updating profile.");
+      setError(error?.response?.data?.message || "Something went wrong while updating profile.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-md-10 col-xl-8 col-xxl-6  mx-auto"> 
-          <form onSubmit={handleUpdate} className="card p-4 shadow space-y-4 max-w-md mx-auto mt-4">
-            <div className='mb-4'>
-              <label className="form-label font-medium">Email</label>
-              <input type="email" className="form-control border p-2 rounded w-full" value={emailId} onChange={(e) => setEmailId(e.target.value)} required />
+    <div className="admin-profile-setting">
+      <div className="admin-profile-setting-container">
+        <div className="admin-profile-setting-card">
+          <h2 className="admin-profile-setting-title">Account Settings</h2>
+          <form onSubmit={handleUpdate}>
+            <div className="admin-profile-setting-form-group">
+              <label className="admin-profile-setting-label">Email</label>
+              <input 
+                type="email" 
+                className="admin-profile-setting-input" 
+                value={emailId} 
+                onChange={(e) => setEmailId(e.target.value)} 
+                required 
+              />
             </div>
-            <div className='mb-4'>
-              <label className="form-label font-medium">New Password</label>
-              <input type="password" className="form-control border p-2 rounded w-full" placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <div className="admin-profile-setting-form-group">
+              <label className="admin-profile-setting-label">New Password</label>
+              <input 
+                type="password" 
+                className="admin-profile-setting-input" 
+                placeholder="Enter new password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+              />
             </div>
-            {error && <div className="alert alert-danger">{error}</div>}
-            {message && <div className="alert alert-success">{message}</div>}
-            <button type="submit" className="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded w-full" disabled={loading}>
+            {error && (
+              <div className="admin-profile-setting-alert admin-profile-setting-alert-danger">
+                {error}
+              </div>
+            )}
+            {message && (
+              <div className="admin-profile-setting-alert admin-profile-setting-alert-success">
+                {message}
+              </div>
+            )}
+            <button 
+              type="submit" 
+              className="admin-profile-setting-button" 
+              disabled={loading}
+            >
               {loading ? "Updating..." : "Update Account"}
             </button>
           </form>

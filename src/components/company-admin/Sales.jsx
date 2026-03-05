@@ -6,6 +6,7 @@ import { BaseUrl } from "../service/Uri";
 import { FaShoppingCart, FaDownload, FaEdit, FaEye, FaTrash, FaPlus, FaSearch, FaFilter, FaRupeeSign, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import CommonHeader from './CommonHeader';
 import { CreateSaleModal, EditSaleModal, ViewSaleModal } from './SalesModals';
+import './CompanySales.css';
 
 const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [sales, setSales] = useState([]);
@@ -403,421 +404,326 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   };
 
   return (
-    <div className="container-fluid p-0" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="container-fluid p-0">
       <CommonHeader title="Sales" company={company} toggleSidebar={toggleSidebar} setCurrentPage={setCurrentPage} />
-
-      {/* Header Section */}
-      <div className="pt-4">
-        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
-          <div className="mb-3 mb-sm-0">
-            <h2 className="fw-bold text-dark mb-1" style={{ fontSize: '1.75rem' }}>
-              <FaShoppingCart className="me-2" style={{ color: '#4f46e5' }} />
-              Sales Management
-            </h2>
-            <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>
-              Track your product sales and customer transactions
-            </p>
+      <div className="company-sales">
+        {/* Header Section */}
+        <div className="company-sales-header">
+          <div className="company-sales-header-top">
+            <div className="company-sales-title-section">
+              <h2 className="company-sales-title">
+                <FaShoppingCart className="company-sales-title-icon" />
+                Sales Management
+              </h2>
+              <p className="company-sales-subtitle">Track your product sales and customer transactions</p>
+            </div>
+            <div className="company-sales-header-actions">
+              <button 
+                className="company-sales-button company-sales-button-primary" 
+                onClick={openCreateModal}
+              >
+                <FaPlus size={14} />
+                New Sale
+              </button>
+              <button 
+                className="company-sales-button company-sales-button-secondary" 
+                onClick={downloadCSV}
+              >
+                <FaDownload size={14} />
+                Export
+              </button>
+            </div>
           </div>
-          <div className="d-flex gap-2">
-            <button 
-              className="btn btn-primary d-flex align-items-center px-3 py-2 fw-medium" 
-              onClick={openCreateModal}
-              style={{ 
-                borderRadius: '10px',
-                backgroundColor: '#4f46e5',
-                border: 'none',
-                fontSize: '0.875rem'
-              }}
-            >
-              <FaPlus className="me-2" size={14} />
-              New Sale
-            </button>
-            <button 
-              className="btn btn-outline-primary d-flex align-items-center px-3 py-2 fw-medium" 
-              onClick={downloadCSV}
-              style={{ 
-                borderRadius: '10px',
-                borderColor: '#4f46e5',
-                color: '#4f46e5',
-                fontSize: '0.875rem'
-              }}
-            >
-              <FaDownload className="me-2" size={14} />
-              Export
-            </button>
+
+          {/* Stats Cards */}
+          <div className="company-sales-stats">
+            <div className="company-sales-stat-card">
+              <div className="company-sales-stat-header">
+                <span className="company-sales-stat-badge">Total</span>
+              </div>
+              <div className="company-sales-stat-value">{stats.totalSales}</div>
+              <p className="company-sales-stat-label">Sales</p>
+            </div>
+            <div className="company-sales-stat-card">
+              <div className="company-sales-stat-header">
+                <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+              </div>
+              <div className="company-sales-stat-value">{stats.monthlySales}</div>
+              <p className="company-sales-stat-label">This Month</p>
+            </div>
+            <div className="company-sales-stat-card">
+              <div className="company-sales-stat-header">
+                <span className="company-sales-stat-badge">Revenue</span>
+              </div>
+              <div className="company-sales-stat-value">₹{stats.totalRevenue.toFixed(2)}</div>
+              <p className="company-sales-stat-label">Total</p>
+            </div>
+            <div className="company-sales-stat-card">
+              <div className="company-sales-stat-header">
+                <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+              </div>
+              <div className="company-sales-stat-value">₹{stats.monthlyRevenue.toFixed(2)}</div>
+              <p className="company-sales-stat-label">This Month</p>
+            </div>
+          </div>
+
+          {/* Filter Section */}
+          <div className="company-sales-filters">
+            <div className="company-sales-filter-group">
+              <select 
+                className="company-sales-filter-input" 
+                value={filterType} 
+                onChange={handleFilterTypeChange}
+              >
+                <option value="all">All Time</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            {filterType === 'custom' && (
+              <>
+                <div className="company-sales-filter-group">
+                  <input 
+                    type="date" 
+                    className="company-sales-filter-input" 
+                    value={fromDate} 
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </div>
+                <div className="company-sales-filter-group">
+                  <input 
+                    type="date" 
+                    className="company-sales-filter-input" 
+                    value={toDate} 
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+            <div className="company-sales-filter-group">
+              <input 
+                type="text" 
+                className="company-sales-filter-input" 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by customer name"
+              />
+            </div>
+            <div className="company-sales-filter-actions">
+              <button 
+                className="company-sales-filter-button company-sales-filter-button-primary" 
+                onClick={applyFilters}
+              >
+                <FaFilter size={14} />
+                Apply
+              </button>
+              <button 
+                className="company-sales-filter-button company-sales-filter-button-secondary" 
+                onClick={clearFilters}
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="row g-3 mb-4">
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 h-100" style={{ 
-              borderRadius: '12px', 
-              backgroundColor: 'white',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-            }}>
-              <div className="card-body p-3">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <div className="p-2 rounded-circle" style={{ backgroundColor: '#eff6ff' }}>
-                    <FaShoppingCart size={16} style={{ color: '#3b82f6' }} />
-                  </div>
-                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>Total</span>
-                </div>
-                <h3 className="fw-bold mb-1" style={{ fontSize: '1.5rem', color: '#1f2937' }}>{stats.totalSales}</h3>
-                <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Sales</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 h-100" style={{ 
-              borderRadius: '12px', 
-              backgroundColor: 'white',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-            }}>
-              <div className="card-body p-3">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <div className="p-2 rounded-circle" style={{ backgroundColor: '#f0fdf4' }}>
-                    <FaCalendarAlt size={16} style={{ color: '#22c55e' }} />
-                  </div>
-                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>{fromDate && toDate ? 'Period' : 'Monthly'}</span>
-                </div>
-                <h3 className="fw-bold mb-1" style={{ fontSize: '1.5rem', color: '#1f2937' }}>{stats.monthlySales}</h3>
-                <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>This Month</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 h-100" style={{ 
-              borderRadius: '12px', 
-              backgroundColor: 'white',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-            }}>
-              <div className="card-body p-3">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <div className="p-2 rounded-circle" style={{ backgroundColor: '#fefce8' }}>
-                    <FaRupeeSign size={16} style={{ color: '#eab308' }} />
-                  </div>
-                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>Revenue</span>
-                </div>
-                <h3 className="fw-bold mb-1" style={{ fontSize: '1.5rem', color: '#1f2937' }}>₹{stats.totalRevenue.toFixed(2)}</h3>
-                <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Total</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 h-100" style={{ 
-              borderRadius: '12px', 
-              backgroundColor: 'white',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-            }}>
-              <div className="card-body p-3">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <div className="p-2 rounded-circle" style={{ backgroundColor: '#fef2f2' }}>
-                    <FaUser size={16} style={{ color: '#ef4444' }} />
-                  </div>
-                  <span className="badge bg-light text-muted" style={{ fontSize: '0.75rem' }}>{fromDate && toDate ? 'Period' : 'Monthly'}</span>
-                </div>
-                <h3 className="fw-bold mb-1" style={{ fontSize: '1.5rem', color: '#1f2937' }}>₹{stats.monthlyRevenue.toFixed(2)}</h3>
-                <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>This Month</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filter Section */}
-        <div className="row g-3 mb-4">
-          <div className="col-md-3 col-sm-6">
-            <select 
-              className="form-select" 
-              value={filterType} 
-              onChange={handleFilterTypeChange}
-              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
-            >
-              <option value="all">All Time</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-          {filterType === 'custom' && (
-            <>
-              <div className="col-md-3 col-sm-6">
-                <input 
-                  type="date" 
-                  className="form-control" 
-                  value={fromDate} 
-                  onChange={(e) => setFromDate(e.target.value)}
-                  style={{ borderRadius: '10px', fontSize: '0.875rem' }}
-                />
-              </div>
-              <div className="col-md-3 col-sm-6">
-                <input 
-                  type="date" 
-                  className="form-control" 
-                  value={toDate} 
-                  onChange={(e) => setToDate(e.target.value)}
-                  style={{ borderRadius: '10px', fontSize: '0.875rem' }}
-                />
-              </div>
-            </>
-          )}
-          <div className="col-md-3 col-sm-6">
-            <input 
-              type="text" 
-              className="form-control" 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by customer name"
-              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
-            />
-          </div>
-          <div className="col-md-3 col-sm-12 d-flex gap-2">
-            <button 
-              className="btn btn-primary flex-grow-1" 
-              onClick={applyFilters}
-              style={{ borderRadius: '10px', fontSize: '0.875rem' }}
-            >
-              <FaFilter className="me-2" size={14} />
-              Apply
-            </button>
-            <button 
-              className="btn btn-outline-secondary flex-grow-1" 
-              onClick={clearFilters}
-              style={{ borderRadius: '10px', fontSize: '0.875rem', borderColor: '#4f46e5', color: '#4f46e5' }}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Sales List */}
-      <div className="pb-4">
-        <div className="card border-0" style={{ 
-          borderRadius: '12px', 
-          backgroundColor: 'white',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}>
+        {/* Sales List */}
+        <div className="company-sales-table-container">
           {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border" style={{ color: '#4f46e5' }} role="status"></div>
-              <p className="mt-3 text-muted">Loading sales...</p>
+            <div className="company-sales-loading">
+              <div className="company-sales-spinner"></div>
+              <p className="company-sales-loading-text">Loading sales...</p>
             </div>
           ) : sales.length === 0 ? (
-            <div className="text-center py-5">
-              <div className="mb-3 p-4 rounded-circle mx-auto" style={{ 
-                backgroundColor: '#f8fafc', 
-                width: 'fit-content' 
-              }}>
-                <FaShoppingCart size={48} className="text-muted" />
+            <div className="company-sales-no-data">
+              <div className="company-sales-no-data-icon">
+                <FaShoppingCart />
               </div>
-              <h5 className="text-muted mb-2">No sales found</h5>
-              <p className="text-muted mb-3">Start by creating your first sale</p>
+              <div className="company-sales-no-data-title">No sales found</div>
+              <p className="company-sales-no-data-text">Start by creating your first sale</p>
               <button 
-                className="btn btn-primary px-4 py-2" 
+                className="company-sales-no-data-button" 
                 onClick={openCreateModal}
-                style={{ borderRadius: '10px', backgroundColor: '#4f46e5', border: 'none' }}
               >
-                <FaPlus className="me-2" size={14} />
+                <FaPlus size={14} />
                 Create First Sale
               </button>
             </div>
           ) : (
             <>
-              {/* Mobile View */}
-              {isMobile ? (
-                <div className="">
-                  {sales.map((sale, index) => (
-                    <div 
-                      key={index} 
-                      className="card border-0 mb-3" 
-                      style={{ 
-                        borderRadius: '10px', 
-                        backgroundColor: '#fafafa',
-                        border: '1px solid #e5e7eb'
-                      }}
-                    >
-                      <div className="card-body p-3">
-                        <div className="d-flex align-items-start mb-3">
-                          <div className="flex-grow-1">
-                            <h6 className="fw-bold mb-1" style={{ fontSize: '1rem', color: '#1f2937' }}>
-                              {sale.customerName}
-                            </h6>
-                            <p className="text-muted mb-1" style={{ fontSize: '0.875rem' }}>
-                              {sale.inventoryId?.name || 'Product N/A'}
-                            </p>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <span className="text-muted" style={{ fontSize: '0.875rem' }}>
-                                Qty: {sale.quantitySold}
-                              </span>
-                              <span className="fw-medium" style={{ fontSize: '0.875rem', color: '#4f46e5' }}>
-                                ₹{sale.totalAmount}
-                              </span>
-                            </div>
-                          </div>
+              {/* Mobile Card View */}
+              <div className="company-sales-cards">
+                {sales.map((sale, index) => {
+                  const getPaymentStatusClass = () => {
+                    if (sale.paymentStatus === 'completed') return 'company-sales-table-status-success';
+                    if (sale.paymentStatus === 'pending') return 'company-sales-table-status-warning';
+                    return 'company-sales-table-status-danger';
+                  };
+
+                  const getPaymentMethodClass = () => {
+                    if (sale.paymentMethod === 'cash') return 'company-sales-table-status-success';
+                    if (sale.paymentMethod === 'online') return 'company-sales-table-status-primary';
+                    return 'company-sales-table-status-info';
+                  };
+
+                  return (
+                    <div key={index} className="company-sales-card">
+                      <div className="company-sales-card-header">
+                        <h6 className="company-sales-card-customer-name">{sale.customerName}</h6>
+                        <p className="company-sales-card-product">{sale.inventoryId?.name || 'Product N/A'}</p>
+                        <div className="company-sales-card-details">
+                          <span className="company-sales-card-quantity">Qty: {sale.quantitySold}</span>
+                          <span className="company-sales-card-amount">₹{sale.totalAmount}</span>
                         </div>
-                        
-                        <div className="row g-2 mb-3">
-                          <div className="col-6">
-                            <div className="p-2 rounded" style={{ backgroundColor: 'white' }}>
-                              <small className="text-muted d-block">Payment</small>
-                              <span style={{ fontSize: '0.875rem' }}>{sale.paymentMethod}</span>
-                            </div>
-                          </div>
-                          <div className="col-6">
-                            <div className="p-2 rounded" style={{ backgroundColor: 'white' }}>
-                              <small className="text-muted d-block">Date</small>
-                              <span style={{ fontSize: '0.875rem' }}>{new Date(sale.saleDate).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="d-flex justify-content-between align-items-center">
-                          <span 
-                            className={`badge ${sale.paymentStatus === 'completed' ? 'bg-success' : 'bg-warning'}`}
-                            style={{ fontSize: '0.75rem' }}
-                          >
-                            {sale.paymentStatus}
+                      </div>
+                      <div className="company-sales-card-fields">
+                        <div className="company-sales-card-field">
+                          <div className="company-sales-card-field-label">Payment</div>
+                          <span className={`company-sales-card-field-value ${getPaymentMethodClass()}`}>
+                            {sale.paymentMethod}
                           </span>
-                          <div className="d-flex gap-1">
-                            <button 
-                              className="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" 
-                              onClick={() => openViewModal(sale)}
-                              style={{ borderRadius: '6px', padding: '8px' }}
-                            >
-                              <FaEye size={12} />
-                            </button>
-                            <button 
-                              className="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center" 
-                              onClick={() => openEditModal(sale)}
-                              style={{ borderRadius: '6px', padding: '8px' }}
-                            >
-                              <FaEdit size={12} />
-                            </button>
-                            <button 
-                              className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center" 
-                              onClick={() => handleDelete(sale)}
-                              style={{ borderRadius: '6px', padding: '8px' }}
-                            >
-                              <FaTrash size={12} />
-                            </button>
-                          </div>
+                        </div>
+                        <div className="company-sales-card-field">
+                          <div className="company-sales-card-field-label">Date</div>
+                          <div className="company-sales-card-field-value">{new Date(sale.saleDate).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                      <div className="company-sales-card-footer">
+                        <span className={`company-sales-card-status ${getPaymentStatusClass()}`}>
+                          {sale.paymentStatus}
+                        </span>
+                        <div className="company-sales-card-actions">
+                          <button 
+                            className="company-sales-card-action-button company-sales-card-action-button-primary" 
+                            onClick={() => openViewModal(sale)}
+                            title="View"
+                          >
+                            <FaEye size={12} />
+                          </button>
+                          <button 
+                            className="company-sales-card-action-button company-sales-card-action-button-secondary" 
+                            onClick={() => openEditModal(sale)}
+                            title="Edit"
+                          >
+                            <FaEdit size={12} />
+                          </button>
+                          <button 
+                            className="company-sales-card-action-button company-sales-card-action-button-danger" 
+                            onClick={() => handleDelete(sale)}
+                            title="Delete"
+                          >
+                            <FaTrash size={12} />
+                          </button>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                /* Desktop View */
-                <div className="table-responsive" style={{ maxWidth: isOpen ? 'calc(100vw - 312px)' : 'calc(100vw - 123px)', overflowX: 'auto' }}>
-                  <table className="table table-hover mb-0">
-                    <thead style={{ backgroundColor: '#f8fafc' }}>
-                      <tr>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Customer</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Product</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Quantity</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Unit Price</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Total</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Payment</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Date</th>
-                        <th className="fw-semibold px-3 py-3" style={{ color: '#374151', fontSize: '0.875rem' }}>Payment Status</th>
-                        <th className="fw-semibold px-3 py-3 text-end" style={{ minWidth: "150px", color: '#374151', fontSize: '0.875rem' }}>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sales.map((sale, index) => (
-                        <tr key={index} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle' }}>
-                            <div>
-                              <span style={{ color: '#374151', fontSize: '0.875rem', fontWeight: '500' }}>
-                                {sale.customerName}
-                              </span>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="company-sales-table-wrapper">
+                <table className="company-sales-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Total</th>
+                      <th>Payment</th>
+                      <th>Date</th>
+                      <th>Payment Status</th>
+                      <th className="text-end" style={{ minWidth: "150px" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sales.map((sale, index) => {
+                      const getPaymentStatusClass = () => {
+                        if (sale.paymentStatus === 'completed') return 'company-sales-table-status-success';
+                        if (sale.paymentStatus === 'pending') return 'company-sales-table-status-warning';
+                        return 'company-sales-table-status-danger';
+                      };
+
+                      const getPaymentMethodClass = () => {
+                        if (sale.paymentMethod === 'cash') return 'company-sales-table-status-success';
+                        if (sale.paymentMethod === 'online') return 'company-sales-table-status-primary';
+                        return 'company-sales-table-status-info';
+                      };
+
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <div className="company-sales-table-customer">
+                              <span className="company-sales-table-customer-name">{sale.customerName}</span>
                               {sale.customerEmail && (
-                                <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
-                                  {sale.customerEmail}
-                                </div>
+                                <span className="company-sales-table-customer-email">{sale.customerEmail}</span>
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle' }}>
-                            <span style={{ color: '#374151', fontSize: '0.875rem' }}>
-                              {sale.inventoryId?.name || 'N/A'}
-                            </span>
-                            {sale.inventoryId?.sku && (
-                              <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
-                                SKU: {sale.inventoryId.sku}
-                              </div>
-                            )}
+                          <td>
+                            <div className="company-sales-table-product">
+                              <span className="company-sales-table-product-name">{sale.inventoryId?.name || 'N/A'}</span>
+                              {sale.inventoryId?.sku && (
+                                <span className="company-sales-table-product-sku">SKU: {sale.inventoryId.sku}</span>
+                              )}
+                            </div>
                           </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle', color: '#374151', fontSize: '0.875rem' }}>
-                            {sale.quantitySold}
+                          <td>{sale.quantitySold}</td>
+                          <td>₹{sale.unitPrice}</td>
+                          <td>
+                            <span className="company-sales-table-amount">₹{sale.totalAmount}</span>
                           </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle', color: '#374151', fontSize: '0.875rem' }}>
-                            ₹{sale.unitPrice}
-                          </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle', color: '#4f46e5', fontSize: '0.875rem', fontWeight: '600' }}>
-                            ₹{sale.totalAmount}
-                          </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle' }}>
-                            <span className={`badge ${sale.paymentMethod === 'cash' ? 'bg-success' : sale.paymentMethod === 'online' ? 'bg-primary' : 'bg-info'}`} style={{ fontSize: '0.75rem' }}>
+                          <td>
+                            <span className={`company-sales-table-status ${getPaymentMethodClass()}`}>
                               {sale.paymentMethod}
                             </span>
                           </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle', color: '#6b7280', fontSize: '0.875rem' }}>
-                            {new Date(sale.saleDate).toLocaleDateString()}
-                          </td>
-                          <td className="py-3 px-3" style={{ verticalAlign: 'middle' }}>
-                            <span 
-                              className={`badge ${sale.paymentStatus === 'completed' ? 'bg-success' : 'bg-warning'}`}
-                              style={{ fontSize: '0.75rem' }}
-                            >
+                          <td>{new Date(sale.saleDate).toLocaleDateString()}</td>
+                          <td>
+                            <span className={`company-sales-table-status ${getPaymentStatusClass()}`}>
                               {sale.paymentStatus}
                             </span>
                           </td>
-                          <td className="py-3 px-3 text-end" style={{ verticalAlign: 'middle' }}>
-                            <div className="d-flex gap-1 justify-content-end">
+                          <td className="text-end">
+                            <div className="company-sales-table-actions">
                               <button 
-                                className="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" 
+                                className="company-sales-table-action-button company-sales-table-action-button-primary" 
                                 onClick={() => openViewModal(sale)}
-                                style={{ borderRadius: '6px', padding: '8px' }}
+                                title="View"
                               >
                                 <FaEye size={12} />
                               </button>
                               <button 
-                                className="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center" 
+                                className="company-sales-table-action-button company-sales-table-action-button-secondary" 
                                 onClick={() => openEditModal(sale)}
-                                style={{ borderRadius: '6px', padding: '8px' }}
+                                title="Edit"
                               >
                                 <FaEdit size={12} />
                               </button>
                               <button 
-                                className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center" 
+                                className="company-sales-table-action-button company-sales-table-action-button-danger" 
                                 onClick={() => handleDelete(sale)}
-                                style={{ borderRadius: '6px', padding: '8px' }}
+                                title="Delete"
                               >
                                 <FaTrash size={12} />
                               </button>
                             </div>
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
               {/* Show More */}
               {hasMore && (
-                <div className="d-flex justify-content-center align-items-center py-4" style={{ borderTop: '1px solid #f3f4f6' }}>
+                <div className="company-sales-show-more">
                   <button 
-                    className="btn btn-outline-primary" 
+                    className="company-sales-show-more-button" 
                     onClick={handleShowMore}
-                    style={{ 
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      borderColor: '#4f46e5',
-                      color: '#4f46e5'
-                    }}
                   >
                     Show More
                   </button>

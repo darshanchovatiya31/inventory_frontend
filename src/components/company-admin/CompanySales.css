@@ -1,0 +1,895 @@
+/* Company Sales - Clean Modern Design */
+
+.company-sales {
+  width: 100%;
+  padding: 24px;
+  background-color: #f8fafc;
+}
+
+.company-sales-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* margin-bottom: 24px; */
+}
+
+.company-sales-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.company-sales-title-section {
+  flex: 1;
+}
+
+.company-sales-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-sales-title-icon {
+  color: #1E3A8A;
+  font-size: 24px;
+}
+
+.company-sales-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.company-sales-header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.company-sales-button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-sales-button-primary {
+  background-color: #1E3A8A;
+  color: #ffffff;
+}
+
+.company-sales-button-primary:hover {
+  background-color: #1e40af;
+}
+
+.company-sales-button-secondary {
+  background-color: #ffffff;
+  color: #1E3A8A;
+  border: 1px solid #1E3A8A;
+}
+
+.company-sales-button-secondary:hover {
+  background-color: #eff6ff;
+}
+
+/* Stats Cards */
+.company-sales-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.company-sales-stat-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.company-sales-stat-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.company-sales-stat-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.company-sales-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.company-sales-stat-label {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Filters */
+.company-sales-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: end;
+}
+
+.company-sales-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-sales-filter-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.company-sales-filter-input {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #1f2937;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+}
+
+.company-sales-filter-input:focus {
+  border-color: #1E3A8A;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.company-sales-filter-input::placeholder {
+  color: #9ca3af;
+}
+
+.company-sales-filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.company-sales-filter-button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
+}
+
+.company-sales-filter-button-primary {
+  background-color: #1E3A8A;
+  color: #ffffff;
+}
+
+.company-sales-filter-button-primary:hover {
+  background-color: #1e40af;
+}
+
+.company-sales-filter-button-secondary {
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.company-sales-filter-button-secondary:hover {
+  background-color: #f9fafb;
+}
+
+/* Table Container */
+.company-sales-table-container {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.company-sales-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.company-sales-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #1E3A8A;
+  border-radius: 50%;
+}
+
+.company-sales-loading-text {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+.company-sales-no-data {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.company-sales-no-data-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  color: #9ca3af;
+}
+
+.company-sales-no-data-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.company-sales-no-data-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.company-sales-no-data-button {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #1E3A8A;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-sales-no-data-button:hover {
+  background-color: #1e40af;
+}
+
+/* Desktop Table */
+.company-sales-table-wrapper {
+  overflow-x: auto;
+}
+
+.company-sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.company-sales-table thead {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.company-sales-table th {
+  padding: 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.company-sales-table th.text-end {
+  text-align: right;
+}
+
+.company-sales-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.company-sales-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.company-sales-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.company-sales-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #1f2937;
+  border: none;
+  vertical-align: middle;
+}
+
+.company-sales-table-customer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-sales-table-customer-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.company-sales-table-customer-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.company-sales-table-product {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-sales-table-product-name {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.company-sales-table-product-sku {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.company-sales-table-amount {
+  font-weight: 700;
+  color: #1E3A8A;
+  font-size: 14px;
+}
+
+.company-sales-table-status {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.company-sales-table-status-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.company-sales-table-status-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.company-sales-table-status-primary {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.company-sales-table-status-info {
+  background-color: #cffafe;
+  color: #155e75;
+}
+
+.company-sales-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.company-sales-table-action-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  font-size: 13px;
+}
+
+.company-sales-table-action-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.company-sales-table-action-button-primary {
+  color: #1E3A8A;
+  border-color: #bfdbfe;
+}
+
+.company-sales-table-action-button-primary:hover {
+  background-color: #eff6ff;
+}
+
+.company-sales-table-action-button-secondary {
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.company-sales-table-action-button-secondary:hover {
+  background-color: #f3f4f6;
+}
+
+.company-sales-table-action-button-danger {
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.company-sales-table-action-button-danger:hover {
+  background-color: #fee2e2;
+}
+
+.company-sales-show-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.company-sales-show-more-button {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E3A8A;
+  background-color: #ffffff;
+  border: 1px solid #1E3A8A;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+.company-sales-show-more-button:hover {
+  background-color: #eff6ff;
+}
+
+/* Mobile Card View */
+.company-sales-cards {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .company-sales-table-container {
+  background-color: transparent;
+  border: none;
+  border-radius: 0px;
+  box-shadow: 0 0px 0px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+  .company-sales-table-wrapper {
+    display: none;
+  }
+
+  .company-sales-cards {
+    display: block;
+    /* padding: 16px; */
+  }
+
+  .company-sales-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .company-sales-card-header {
+    margin-bottom: 12px;
+  }
+
+  .company-sales-card-customer-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 4px;
+  }
+
+  .company-sales-card-product {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 8px;
+  }
+
+  .company-sales-card-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .company-sales-card-quantity {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  .company-sales-card-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E3A8A;
+  }
+
+  .company-sales-card-fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .company-sales-card-field {
+    background-color: #f9fafb;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .company-sales-card-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .company-sales-card-field-value {
+    font-size: 13px;
+    color: #1f2937;
+  }
+
+  .company-sales-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .company-sales-card-status {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .company-sales-card-status.company-sales-table-status-success {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  .company-sales-card-status.company-sales-table-status-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  .company-sales-card-status.company-sales-table-status-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+
+  .company-sales-card-field-value.company-sales-table-status-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .company-sales-card-field-value.company-sales-table-status-primary {
+    background-color: #dbeafe;
+    color: #1e40af;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .company-sales-card-field-value.company-sales-table-status-info {
+    background-color: #cffafe;
+    color: #155e75;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .company-sales-card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .company-sales-card-action-button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    outline: none;
+    font-size: 13px;
+  }
+
+  .company-sales-card-action-button:hover {
+    background-color: #f9fafb;
+  }
+
+  .company-sales-card-action-button-primary {
+    color: #1E3A8A;
+    border-color: #bfdbfe;
+  }
+
+  .company-sales-card-action-button-secondary {
+    color: #4b5563;
+    border-color: #d1d5db;
+  }
+
+  .company-sales-card-action-button-danger {
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+}
+
+/* Sales Modals */
+.company-sales-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  overflow: hidden;
+}
+
+.company-sales-modal {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1051;
+}
+
+.company-sales-modal-sm {
+  max-width: 480px;
+}
+
+.company-sales-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-sales-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.company-sales-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.company-sales-modal-close:hover {
+  color: #374151;
+}
+
+.company-sales-modal-body {
+  padding: 20px;
+}
+
+.company-sales-view-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.company-sales-view-field {
+  background-color: #f9fafb;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.company-sales-view-field-full {
+  grid-column: 1 / -1;
+}
+
+.company-sales-view-label {
+  display: block;
+  font-size: 10px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.company-sales-view-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.company-sales-view-value-primary {
+  color: #1E3A8A;
+  font-weight: 700;
+}
+
+.company-sales-view-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.company-sales-view-description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.company-sales-view-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.company-sales-view-badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.company-sales-view-badge-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.company-sales-view-badge-danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.company-sales-view-badge-primary {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.company-sales-view-badge-info {
+  background-color: #cffafe;
+  color: #155e75;
+}
+
+.company-sales-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.company-sales-modal-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.company-sales-modal-button-primary {
+  background-color: #1E3A8A;
+  color: #ffffff;
+  margin-left: 8px;
+}
+
+.company-sales-modal-button-primary:hover {
+  background-color: #1e40af;
+}
+
+.company-sales-modal-button-secondary {
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.company-sales-modal-button-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .company-sales {
+    padding: 16px;
+  }
+
+  .company-sales-header-top {
+    flex-direction: column;
+  }
+
+  .company-sales-header-actions {
+    width: 100%;
+  }
+
+  .company-sales-button {
+    flex: 1;
+  }
+
+  .company-sales-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .company-sales-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .company-sales-filter-actions {
+    flex-direction: row;
+  }
+
+  .company-sales-filter-button {
+    flex: 1;
+  }
+}
+

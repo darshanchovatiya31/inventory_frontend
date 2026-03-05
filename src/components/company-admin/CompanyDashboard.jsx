@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { FaBox, FaDollarSign, FaShoppingCart, FaChartLine, FaCalendarAlt, FaMoneyBillWave } from 'react-icons/fa';
 import axios from 'axios';
 import { BaseUrl } from '../service/Uri';
 import CommonHeader from './CommonHeader';
+import './CompanyDashboard.css';
 
 const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
   const CompanyInfo = JSON.parse(localStorage.getItem('company'));
@@ -46,89 +48,88 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
     <div className="container-fluid p-0">
       <CommonHeader title="Dashboard" company={CompanyInfo} toggleSidebar={toggleSidebar} setCurrentPage={setCurrentPage} />
 
-      {loading ? (
-        <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
-          <div className="spinner-border" style={{ color: '#4f46e5' }} role="status"></div>
-          <p className="mt-3 text-muted">Loading dashboard...</p>
-        </div>
-      ) : (
-        <div className="row g-4 mt-3">
-        {/* Inventory Cards */}
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(34 44 107), rgb(139 146 177))' }}>
-              <div className="card-body py-5">
-                <h6>Total Inventory</h6>
-                <h2>{dashboardData.totalItems}</h2>
-                <p>All time items</p>
+      <div className="company-dashboard">
+        {loading ? (
+          <div className="company-dashboard-loading">
+            <div className="company-dashboard-spinner"></div>
+            <p className="company-dashboard-loading-text">Loading dashboard...</p>
+          </div>
+        ) : (
+          <div className="company-dashboard-grid">
+            {/* Total Inventory */}
+            <div className="company-dashboard-card company-dashboard-card-primary">
+              <div className="company-dashboard-card-icon">
+                <FaBox />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Total Inventory</div>
+                <div className="company-dashboard-card-value">{dashboardData.totalItems}</div>
+                <p className="company-dashboard-card-description">All time items</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(139 69 19), rgb(205 133 63))' }}>
-              <div className="card-body py-5">
-                <h6>Total Value</h6>
-                <h2>{formatCurrency(dashboardData.totalValue)}</h2>
-                <p>Inventory worth</p>
+            {/* Total Value */}
+            <div className="company-dashboard-card company-dashboard-card-secondary">
+              <div className="company-dashboard-card-icon">
+                <FaDollarSign />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Total Value</div>
+                <div className="company-dashboard-card-value">{formatCurrency(dashboardData.totalValue)}</div>
+                <p className="company-dashboard-card-description">Inventory worth</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Sales Cards */}
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(21 94 117), rgb(34 197 94))' }}>
-              <div className="card-body py-5">
-                <h6>Total Sales</h6>
-                <h2>{dashboardData.totalSales}</h2>
-                <p>All time transactions</p>
+            {/* Total Sales */}
+            <div className="company-dashboard-card company-dashboard-card-primary">
+              <div className="company-dashboard-card-icon">
+                <FaShoppingCart />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Total Sales</div>
+                <div className="company-dashboard-card-value">{dashboardData.totalSales}</div>
+                <p className="company-dashboard-card-description">All time transactions</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(5 150 105), rgb(16 185 129))' }}>
-              <div className="card-body py-5">
-                <h6>Total Revenue</h6>
-                <h2>{formatCurrency(dashboardData.totalRevenue)}</h2>
-                <p>All time earnings</p>
+            {/* Total Revenue */}
+            <div className="company-dashboard-card company-dashboard-card-secondary">
+              <div className="company-dashboard-card-icon">
+                <FaChartLine />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Total Revenue</div>
+                <div className="company-dashboard-card-value">{formatCurrency(dashboardData.totalRevenue)}</div>
+                <p className="company-dashboard-card-description">All time earnings</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Monthly Cards */}
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(147 51 234), rgb(168 85 247))' }}>
-              <div className="card-body py-5">
-                <h6>Monthly Sales</h6>
-                <h2>{dashboardData.monthlySales}</h2>
-                <p>This month</p>
+            {/* Monthly Sales */}
+            <div className="company-dashboard-card company-dashboard-card-primary">
+              <div className="company-dashboard-card-icon">
+                <FaCalendarAlt />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Monthly Sales</div>
+                <div className="company-dashboard-card-value">{dashboardData.monthlySales}</div>
+                <p className="company-dashboard-card-description">This month</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="col-md-6">
-          <div className="row m-0 mb-2">
-            <div className="card border-0 shadow-sm h-100 text-white" style={{ background: 'linear-gradient(to right, rgb(236 72 153), rgb(244 114 182))' }}>
-              <div className="card-body py-5">
-                <h6>Monthly Revenue</h6>
-                <h2>{formatCurrency(dashboardData.monthlyRevenue)}</h2>
-                <p>This month earnings</p>
+            {/* Monthly Revenue */}
+            <div className="company-dashboard-card company-dashboard-card-secondary">
+              <div className="company-dashboard-card-icon">
+                <FaMoneyBillWave />
+              </div>
+              <div className="company-dashboard-card-content">
+                <div className="company-dashboard-card-label">Monthly Revenue</div>
+                <div className="company-dashboard-card-value">{formatCurrency(dashboardData.monthlyRevenue)}</div>
+                <p className="company-dashboard-card-description">This month earnings</p>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-      )}
     </div>
   );
 };

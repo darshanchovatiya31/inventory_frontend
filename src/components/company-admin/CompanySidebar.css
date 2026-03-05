@@ -1,0 +1,250 @@
+/* Company Sidebar - Clean Modern Design */
+
+.company-sidebar {
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.company-sidebar-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.company-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 998;
+}
+
+/* Sidebar Width States */
+.company-sidebar-open {
+  width: 260px;
+}
+
+.company-sidebar-collapsed {
+  width: 70px;
+}
+
+.company-sidebar-mobile.company-sidebar-collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+/* Header */
+.company-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  flex-shrink: 0;
+}
+
+.company-sidebar-brand {
+  flex: 1;
+}
+
+.company-sidebar-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1E3A8A;
+  margin: 0 0 2px;
+  letter-spacing: -0.3px;
+}
+
+.company-sidebar-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+  display: block;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.company-sidebar-toggle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  color: #374151;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.company-sidebar-toggle:hover {
+  background-color: #e5e7eb;
+  color: #1E3A8A;
+}
+
+.company-sidebar-collapsed .company-sidebar-toggle {
+  margin: 0 auto;
+}
+
+/* Content */
+.company-sidebar-content {
+  flex: 1;
+  min-height: 0;
+  padding: 12px 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.company-sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #4b5563;
+  transition: all 0.15s ease;
+  position: relative;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.company-sidebar-item:hover {
+  background-color: #f9fafb;
+  color: #1E3A8A;
+}
+
+.company-sidebar-item-active {
+  background-color: #1E3A8A;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.company-sidebar-item-active:hover {
+  background-color: #1e40af;
+  color: #ffffff;
+}
+
+.company-sidebar-icon {
+  font-size: 18px;
+  min-width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.company-sidebar-collapsed .company-sidebar-icon {
+  margin: 0 auto;
+  font-size: 20px;
+}
+
+.company-sidebar-label {
+  font-size: 14px;
+  font-weight: inherit;
+  margin-left: 12px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: inherit;
+}
+
+/* Divider */
+.company-sidebar-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 12px 10px;
+  flex-shrink: 0;
+}
+
+.company-sidebar-collapsed .company-sidebar-divider {
+  margin: 12px 8px;
+}
+
+/* Logout Item */
+.company-sidebar-item-logout {
+  margin-top: auto;
+  margin-bottom: 8px;
+  color: #dc2626;
+}
+
+.company-sidebar-item-logout:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.company-sidebar-item-logout.company-sidebar-item-active {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.company-sidebar-item-logout.company-sidebar-item-active:hover {
+  background-color: #b91c1c;
+}
+
+/* Scrollbar */
+.company-sidebar-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.company-sidebar-content::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+.company-sidebar-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.company-sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .company-sidebar {
+    transition: transform 0.3s ease;
+  }
+
+  .company-sidebar-mobile.company-sidebar-collapsed {
+    transform: translateX(-100%);
+  }
+
+  .company-sidebar-open {
+    width: 260px;
+  }
+}
+
+@media (max-width: 576px) {
+  .company-sidebar-open {
+    width: 240px;
+  }
+
+  .company-sidebar-header {
+    padding: 18px 14px;
+  }
+
+  .company-sidebar-item {
+    padding: 10px 12px;
+  }
+
+  .company-sidebar-label {
+    font-size: 13px;
+  }
+}
+

@@ -48,16 +48,20 @@ const CompanyPanel = () => {
   const isMobile = window.innerWidth < 992;
 
   return (
-    <>
-      <div className="d-flex" style={{ background: '#f8f9fb', minHeight: '100vh' }}>
-        <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} currentPage={currentPage} setCurrentPage={(name) => { setCurrentPage(name); if (isMobile) setIsOpen(false); }}/>
-        <div className="flex-grow-1 p-3" style={{ transition: 'margin-left 0.3s ease' }}>{renderContent()}</div>
+    <div className="d-flex" style={{ background: '#f8f9fb', minHeight: '100vh', overflow: 'hidden' }}>
+      <Sidebar 
+        isOpen={isOpen} 
+        toggleSidebar={toggleSidebar} 
+        currentPage={currentPage} 
+        setCurrentPage={(name) => { 
+          setCurrentPage(name); 
+          if (isMobile) setIsOpen(false); 
+        }}
+      />
+      <div className="flex-grow-1" style={{ transition: 'margin-left 0.3s ease', overflowY: 'auto', height: '100vh' }}>
+        {renderContent()}
       </div>
-
-      {isMobile && isOpen && (
-        <div onClick={toggleSidebar} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 998, }}></div>
-      )}
-    </>
+    </div>
   );
 };
 

@@ -1,11 +1,50 @@
-import React from "react";
-import { FaBars } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
+import { FaBars, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { BaseUrl } from "../service/Uri";
+import './CompanyHeader.css';
 
 const CommonHeader = ({ title, company, toggleSidebar, setCurrentPage }) => {
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
+  useEffect(() => {
+    // Reset image error when company changes
+    setImageError(false);
+  }, [company?.logo]);
+
+  const getCompanyInitials = (name) => {
+    if (!name) return 'C';
+    const words = name.trim().split(/\s+/);
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -32,27 +71,72 @@ const CommonHeader = ({ title, company, toggleSidebar, setCurrentPage }) => {
         });
       }
     });
+    setDropdownOpen(false);
+  };
+
+  const handleAccountSetting = () => {
+    setCurrentPage("Account Setting");
+    setDropdownOpen(false);
   };
 
   return (
-    <header className="d-flex justify-content-between align-items-center p-3 shadow-sm bg-white sticky-top" style={{ zIndex: 1 }}>
-      <div className="d-flex align-items-center gap-3">
-        <FaBars size={22} className="cursor-pointer d-lg-none" onClick={(e) => {e.stopPropagation();toggleSidebar();}}/>
-        <h4 className="mb-0 fw-bold text-primary">{title}</h4>
+    <header className="company-header">
+      <div className="company-header-left">
+        <button 
+          className="company-header-menu-btn d-lg-none" 
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSidebar();
+          }}
+          aria-label="Toggle sidebar"
+        >
+          <FaBars />
+        </button>
+        <h1 className="company-header-title">{title}</h1>
       </div>
-      <div className="dropdown">
-        <div className="d-flex align-items-center gap-2 cursor-pointer" role="button" data-bs-toggle="dropdown">
-          <img src={`${company.logo}`} alt="logo" className="rounded-circle border" style={{ width: "40px", height: "40px", objectFit: "cover" }}/>
-          <span className="fw-bold d-none d-sm-block">{company.name}</span>
+
+      <div className="company-header-right" ref={dropdownRef}>
+        <div 
+          className="company-header-user" 
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+        >
+          <div className="company-header-logo">
+            {company?.logo && !imageError ? (
+              <img 
+                src={`${BaseUrl}/${company.logo}`} 
+                alt="Company Logo" 
+                className="company-header-logo-img"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="company-header-logo-placeholder">
+                {getCompanyInitials(company?.name)}
+              </div>
+            )}
+          </div>
+          <div className="company-header-user-info">
+            <div className="company-header-user-name">{company?.name || 'Company'}</div>
+          </div>
         </div>
-        <ul className="dropdown-menu dropdown-menu-end mt-2 shadow-sm">
-          <li>
-            <button className="dropdown-item" onClick={() => setCurrentPage("Account Setting")}>Account Setting</button>
-          </li>
-          <li>
-            <button className="dropdown-item text-danger" onClick={handleLogout}>Logout</button>
-          </li>
-        </ul>
+
+        {dropdownOpen && (
+          <div className="company-header-dropdown">
+            <div 
+              className="company-header-dropdown-item" 
+              onClick={handleAccountSetting}
+            >
+              <FaCog className="company-header-dropdown-icon" />
+              <span>Account Setting</span>
+            </div>
+            <div 
+              className="company-header-dropdown-item company-header-dropdown-item-danger" 
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt className="company-header-dropdown-icon" />
+              <span>Logout</span>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -4,9 +4,93 @@ import Swal from 'sweetalert2';
 import { BaseUrl, FrontendUrl } from "../service/Uri";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import '../../style/SuperAdminCompany.css';
+import './AdminCompany.css';
 
-const Company = ({isOpen}) => {
+const CompanyCard = ({ company, getInitials, copiedId, setCopiedId, generateCompanyUrl, handleUpdateClick, handleDelete }) => {
+  const [logoError, setLogoError] = useState(false);
+  const hasLogo = company.logo && !logoError;
+
+  return (
+    <div className="admin-company-card">
+      <div className="admin-company-card-header">
+        <div className="admin-company-card-logo-wrapper">
+          {hasLogo ? (
+            <img 
+              src={`${company.logo}`} 
+              alt={company.name} 
+              className="admin-company-card-logo"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <div className="admin-company-card-logo-placeholder">
+              {getInitials(company.name)}
+            </div>
+          )}
+        </div>
+        <div className="admin-company-card-title-section">
+          <h3 className="admin-company-card-name">{company.name}</h3>
+          <span className={`admin-company-card-status ${company.isActive ? 'admin-company-status-active' : 'admin-company-status-inactive'}`}>
+            {company.isActive ? 'Active' : 'Inactive'}
+          </span>
+        </div>
+      </div>
+      <div className="admin-company-card-body">
+        <div className="admin-company-card-field">
+          <span className="admin-company-card-label">Email</span>
+          <span className="admin-company-card-value">{company.email}</span>
+        </div>
+        <div className="admin-company-card-field">
+          <span className="admin-company-card-label">Mobile</span>
+          <span className="admin-company-card-value">{company.mobile}</span>
+        </div>
+        <div className="admin-company-card-field">
+          <span className="admin-company-card-label">Contact Person</span>
+          <span className="admin-company-card-value">{company.pname}</span>
+        </div>
+        <div className="admin-company-card-field">
+          <span className="admin-company-card-label">Address</span>
+          <span className="admin-company-card-value">{company.address}</span>
+        </div>
+        <div className="admin-company-card-field">
+          <span className="admin-company-card-label">URL</span>
+          <div className="admin-company-card-url">
+            {copiedId === company._id ? (
+              <span className="admin-company-url-copied">Copied!</span>
+            ) : (
+              <button 
+                className="admin-company-url-button"
+                onClick={() => { 
+                  const companyUrl = generateCompanyUrl(company.name); 
+                  navigator.clipboard.writeText(companyUrl);
+                  setCopiedId(company._id); 
+                  setTimeout(() => setCopiedId(null), 1000);
+                }}
+              >
+                Copy URL
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="admin-company-card-footer">
+        <button 
+          className="admin-company-action-button admin-company-action-edit" 
+          onClick={() => handleUpdateClick(company)}
+        >
+          Edit
+        </button>
+        <button 
+          className="admin-company-action-button admin-company-action-delete" 
+          onClick={() => handleDelete(company._id)}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Company = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [companies, setCompanies] = useState([]);
@@ -227,214 +311,219 @@ const generateCompanyUrl = (name) => {
 
   return (
     <>
-    <div>
-      <div className="d-flex justify-content-end align-items-center mb-3">
-        <button className="btn btn-primary" onClick={() => setShowAddModal(true)}> + Add Company</button>
-      </div>
-
-      <div className="mb-3 d-flex align-items-center justify-content-between">
-        <div className="me-2">
-          <select className="form-select company_select_drop" value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="All">All Companies</option>
-            <option value="Active">Active Companies</option>
-            <option value="Inactive">Inactive Companies</option>
-          </select>
-        </div>
-        <div>
-          <input type="text" className="form-control" placeholder="Search company..." value={search} onChange={(e) => setSearch(e.target.value)}/>
-        </div>
+    <div className="admin-company">
+      <div className="admin-company-filters">
+        <select className="admin-company-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="All">All Companies</option>
+          <option value="Active">Active Companies</option>
+          <option value="Inactive">Inactive Companies</option>
+        </select>
+        <input 
+          type="text" 
+          className="admin-company-search" 
+          placeholder="Search company..." 
+          value={search} 
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button 
+          className="admin-company-add-button" 
+          onClick={() => {
+            setFormData({ name: '', logo: null, email: '', password: '', mobile: '', pname: '', address: '', isActive: true });
+            setErrorMsg('');
+            setShowAddModal(true);
+          }}
+        >
+          + Add Company
+        </button>
       </div>
 
       {loading ? (
-        <div>Loading...</div>
+        <div className="admin-company-loading">Loading...</div>
       ) : (
-        <div className=" sa_company"  style={{ maxWidth: isMobile ? 'calc(100vw - 32px)' : isOpen ? 'calc(100vw - 240px)' : 'calc(100vw - 80px)', overflowX: 'scroll',}}>
-          <table className="table mb-0 table-hover align-middle shadow-lg border-0 rounded-4 overflow-scroll modern-table">
+        <>
+          {/* Desktop Table View */}
+          <div className="admin-company-table-container">
+            <table className="admin-company-table">
             <thead>
-              <tr className="table-header">
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"90px"}}>
-                  <div className="d-flex align-items-center justify-content-center">
-                    <span className="fw-bold text-dark">Logo</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"150px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Company Name</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"160px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Email</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{width:"110px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Mobile no</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"150px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Person Name</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"200px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Address</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{minWidth:"100px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">URL</span>
-                  </div>
-                </th>
-                <th scope="col" className="border-0 py-4 px-xxl-2" style={{width:"110px"}}>
-                  <div className="d-flex align-items-center">
-                    <span className="fw-bold text-dark">Status</span>
-                  </div>
-                </th>
-                <th scope="col" className="text-center border-0 py-4 px-xxl-2" style={{width:"180px"}}>
-                  <span className="fw-bold text-dark">Action</span>
-                </th>
+              <tr>
+                <th style={{minWidth:"90px"}}>Logo</th>
+                <th style={{minWidth:"150px"}}>Company Name</th>
+                <th style={{minWidth:"200px"}}>Contact Details</th>
+                <th style={{minWidth:"200px"}}>Address</th>
+                <th style={{minWidth:"100px"}}>URL</th>
+                <th style={{width:"110px"}}>Status</th>
+                <th className="text-center" style={{width:"180px"}}>Action</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredCompanies.length > 0 ? (
-                filteredCompanies.map((c, index) => (
-                  <tr key={c._id} className="table-row" style={{ animationDelay: `${index * 0.1}s`,}}>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="logo-container">
-                        <img src={`${c.logo}`} alt={c.name} className="company-logo"
-                          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '12px', border: '2px solid #f8f9fa', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease',}}
-                          onMouseEnter={(e) => { e.target.style.transform = 'scale(1.1)'; e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)';}}
-                          onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';}}
-                        />
+              <tbody>
+                {filteredCompanies.length > 0 ? (
+                  filteredCompanies.map((c) => (
+                    <tr key={c._id}>
+                      <td>
+                        <div className="admin-company-logo-container">
+                          <img src={`${c.logo}`} alt={c.name} className="admin-company-logo" />
+                        </div>
+                      </td>
+                    <td>
+                      <div className="admin-company-name">{c.name}</div>
+                    </td>
+                    <td>
+                      <div className="admin-company-contact-details">
+                        <div className="admin-company-contact-person">{c.pname}</div>
+                        <div className="admin-company-contact-email">{c.email}</div>
+                        <div className="admin-company-contact-mobile">{c.mobile}</div>
                       </div>
                     </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="company-name">
-                        <span className="fw-semibold text-dark" style={{ fontSize: '15px', letterSpacing: '0.3px',}}> {c.name}</span>
-                      </div>
+                    <td>
+                      <div className="admin-company-address">{c.address}</div>
                     </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="email-container">
-                        <span className="text-muted" style={{ fontSize: '14px', wordBreak: 'break-word',}}> {c.email}</span>
-                      </div>
-                    </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="mobile-container">
-                        <span className="text-dark" style={{ fontSize: '14px', fontFamily: 'monospace', }}> {c.mobile}</span>
-                      </div>
-                    </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="person-name">
-                        <span className="text-dark" style={{ fontSize: '14px', }}> {c.pname}</span>
-                      </div>
-                    </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="address-container">
-                        <span className="text-muted" style={{ fontSize: '13px', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', }}> {c.address}</span>
-                      </div>
-                    </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <div className="url-container d-flex align-items-center gap-2">
-                        {copiedId === c._id ? (
-                          <span style={{ fontSize: '13px', color: 'green', fontWeight: '600', backgroundColor: '#e6ffed', padding: '4px 10px', borderRadius: '8px', transition: 'opacity 0.3s ease',}}> Copied!</span>
-                        ) : (
-                          <span className="text-primary" style={{ fontSize: '13px', cursor: 'pointer' }}
-                            onClick={() => { const companyUrl = generateCompanyUrl(c.name); navigator.clipboard.writeText(companyUrl);
-                              setCopiedId(c._id); setTimeout(() => setCopiedId(null), 1000);}}> 🔗 Copy URL</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="border-0 py-4 px-xxl-2">
-                      <span className={`badge status-badge ${c.isActive ? 'status-active' : 'status-inactive'}`}
-                        style={{ fontSize: '12px', fontWeight: '600', padding: '6px 12px', borderRadius: '20px',
-                          textTransform: 'uppercase', letterSpacing: '0.5px', backgroundColor: c.isActive ? '#d4edda' : '#f8d7da',
-                          color: c.isActive ? '#155724' : '#721c24', border: `1px solid ${c.isActive ? '#c3e6cb' : '#f5c6cb'}`,}}> {c.isActive ? 'Active' : 'Inactive'}</span>
-                    </td>
-                    <td className="text-end border-0 py-4 px-xxl-2">
-                      <div className="action-buttons d-flex justify-content-end gap-2">
-                        <button className="btn btn-sm action-btn update-btn" onClick={() => handleUpdateClick(c)}
-                          style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeaa7', borderRadius: '8px', padding: '6px 16px', fontSize: '13px', fontWeight: '600', transition: 'all 0.2s ease', textTransform: 'capitalize',}}
-                          onMouseEnter={(e) => { e.target.style.backgroundColor = '#ffc107'; e.target.style.color = '#ffffff'; e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 4px 8px rgba(255, 193, 7, 0.3)';}}
-                          onMouseLeave={(e) => { e.target.style.backgroundColor = '#fff3cd'; e.target.style.color = '#856404'; e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none';}}
-                        > Edit</button>
-                        <button className="btn btn-sm action-btn delete-btn" onClick={() => handleDelete(c._id)}
-                          style={{ backgroundColor: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb', borderRadius: '8px', padding: '6px 16px', fontSize: '13px', fontWeight: '600', transition: 'all 0.2s ease', textTransform: 'capitalize',}}
-                          onMouseEnter={(e) => { e.target.style.backgroundColor = '#dc3545'; e.target.style.color = '#ffffff'; e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 4px 8px rgba(220, 53, 69, 0.3)';}}
-                          onMouseLeave={(e) => { e.target.style.backgroundColor = '#f8d7da'; e.target.style.color = '#721c24'; e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none'; }}
-                        > Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      <td>
+                        <div className="admin-company-url-container">
+                          {copiedId === c._id ? (
+                            <span className="admin-company-url-copied">Copied!</span>
+                          ) : (
+                            <button 
+                              className="admin-company-url-button"
+                              onClick={() => { 
+                                const companyUrl = generateCompanyUrl(c.name); 
+                                navigator.clipboard.writeText(companyUrl);
+                                setCopiedId(c._id); 
+                                setTimeout(() => setCopiedId(null), 1000);
+                              }}
+                            >
+                              🔗 Copy URL
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`admin-company-status-badge ${c.isActive ? 'admin-company-status-active' : 'admin-company-status-inactive'}`}>
+                          {c.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="admin-company-actions">
+                          <button 
+                            className="admin-company-action-button admin-company-action-edit" 
+                            onClick={() => handleUpdateClick(c)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="admin-company-action-button admin-company-action-delete" 
+                            onClick={() => handleDelete(c._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
-                  <td colSpan="10" className="text-center py-5 border-0">
-                    <div className="no-data-container" style={{ padding: '40px 20px', color: '#6c757d', backgroundColor: '#f8f9fa', borderRadius: '12px', margin: '20px', }} >
-                      <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}>📊</div>
-                      <h5 style={{ marginBottom: '8px', color: '#495057' }}>No companies found</h5>
-                      <p style={{ margin: 0, fontSize: '14px' }}>Try adjusting your search criteria</p>
-                    </div>
+                  <td colSpan="7" className="admin-company-no-data">
+                    <div className="admin-company-no-data-icon">📊</div>
+                    <div className="admin-company-no-data-title">No companies found</div>
+                    <p className="admin-company-no-data-text">Try adjusting your search criteria</p>
                   </td>
                 </tr>
               )}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </tbody>
+            </table>
+          </div>
 
-{showUpdateModal && (
-  <div className="modal show d-block company_model" tabIndex="-1" style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
-    <div className="modal-dialog modal-dialog-centered">
-      <form className="modal-content shadow rounded-4 overflow-hidden" onSubmit={handleUpdateSubmit}>
-        <div className="modal-header bg-primary text-white">
-          <h5 className="modal-title fw-semibold">Edit Company</h5>
-          <button type="button" className="btn-close btn-close-white" onClick={() => setShowUpdateModal(false)}></button>
-        </div>
-        <div className="modal-body px-4 py-3">
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Company Name</label>
-            <input type="text" className="form-control" name="name" value={updateData.name} onChange={handleUpdateChange} required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Email</label>
-            <input type="email" className="form-control" name="email" value={updateData.email} onChange={handleUpdateChange} required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Mobile Number</label>
-            <input type="text" className="form-control" name="mobile" value={updateData.mobile} onChange={handleUpdateChange} maxLength="10" pattern="^[0-9]{10}$" title="Mobile number must be exactly 10 digits" required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Contact Person Name</label>
-            <input type="text" className="form-control" name="pname" value={updateData.pname} onChange={handleUpdateChange} required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Address</label>
-            <input type="text" className="form-control" name="address" value={updateData.address} onChange={handleUpdateChange} required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Password</label>
-            <input type="text" className="form-control" name="password" value={updateData.password} onChange={handleUpdateChange} required />
-          </div>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Logo (optional) (JPG, JPEG, PNG) </label>
-            <input type="file" className="form-control" name="logo" accept=".jpg,.jpeg,.png" onChange={handleUpdateChange} />
-            {currentCompany?.logo && (
-              <div className="mt-2">
-                <img src={`${currentCompany.logo}`} alt="Current Logo" style={{ width: '60px', borderRadius: '6px' }} />
+          {/* Mobile Card View */}
+          <div className="admin-company-cards-container">
+            {filteredCompanies.length > 0 ? (
+              filteredCompanies.map((c) => {
+                const getInitials = (name) => {
+                  if (!name) return 'CO';
+                  const words = name.trim().split(/\s+/);
+                  if (words.length >= 2) {
+                    return (words[0][0] + words[1][0]).toUpperCase();
+                  }
+                  return name.substring(0, 2).toUpperCase();
+                };
+
+                return (
+                  <CompanyCard 
+                    key={c._id}
+                    company={c}
+                    getInitials={getInitials}
+                    copiedId={copiedId}
+                    setCopiedId={setCopiedId}
+                    generateCompanyUrl={generateCompanyUrl}
+                    handleUpdateClick={handleUpdateClick}
+                    handleDelete={handleDelete}
+                  />
+                );
+              })
+            ) : (
+              <div className="admin-company-no-data">
+                <div className="admin-company-no-data-icon">📊</div>
+                <div className="admin-company-no-data-title">No companies found</div>
+                <p className="admin-company-no-data-text">Try adjusting your search criteria</p>
               </div>
             )}
           </div>
-          <div className="form-check form-switch mb-2">
-            <input className="form-check-input" type="checkbox" name="isActive" checked={updateData.isActive} onChange={handleUpdateChange} />
-            <label className="form-check-label">Active</label>
-          </div>
+        </>
+      )}
+
+{showUpdateModal && (
+  <div className="admin-company-modal-overlay">
+    <div className="admin-company-modal">
+      <form onSubmit={handleUpdateSubmit}>
+        <div className="admin-company-modal-header">
+          <h5 className="admin-company-modal-title">Edit Company</h5>
+          <button type="button" className="admin-company-modal-close" onClick={() => setShowUpdateModal(false)}>×</button>
         </div>
-        {updateErrorMsg && <div className="alert alert-danger mx-4">{updateErrorMsg}</div>}
-        <div className="modal-footer px-4 py-3">
-          <button type="button" className="btn btn-outline-secondary" onClick={() => setShowUpdateModal(false)}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Update</button>
+        <div className="admin-company-modal-body">
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Company Name</label>
+            <input type="text" className="admin-company-modal-input" name="name" value={updateData.name} onChange={handleUpdateChange} required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Email</label>
+            <input type="email" className="admin-company-modal-input" name="email" value={updateData.email} onChange={handleUpdateChange} required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Mobile Number</label>
+            <input type="text" className="admin-company-modal-input" name="mobile" value={updateData.mobile} onChange={handleUpdateChange} maxLength="10" pattern="^[0-9]{10}$" title="Mobile number must be exactly 10 digits" required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Contact Person Name</label>
+            <input type="text" className="admin-company-modal-input" name="pname" value={updateData.pname} onChange={handleUpdateChange} required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Address</label>
+            <input type="text" className="admin-company-modal-input" name="address" value={updateData.address} onChange={handleUpdateChange} required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Password</label>
+            <input type="text" className="admin-company-modal-input" name="password" value={updateData.password} onChange={handleUpdateChange} required />
+          </div>
+          <div className="admin-company-modal-form-group">
+            <label className="admin-company-modal-label">Logo (optional) (JPG, JPEG, PNG)</label>
+            <input type="file" className="admin-company-modal-file-input" name="logo" accept=".jpg,.jpeg,.png" onChange={handleUpdateChange} />
+            {currentCompany?.logo && (
+              <div className="admin-company-modal-logo-preview">
+                <img src={`${currentCompany.logo}`} alt="Current Logo" className="admin-company-modal-logo-image" />
+              </div>
+            )}
+          </div>
+          <div className="admin-company-modal-form-group">
+            <div className="admin-company-modal-switch">
+              <input className="admin-company-modal-switch-input" type="checkbox" name="isActive" checked={updateData.isActive} onChange={handleUpdateChange} />
+              <label className="admin-company-modal-switch-label">Active</label>
+            </div>
+          </div>
+          {updateErrorMsg && (
+            <div className="admin-company-modal-alert admin-company-modal-alert-danger">{updateErrorMsg}</div>
+          )}
+        </div>
+        <div className="admin-company-modal-footer">
+          <button type="button" className="admin-company-modal-button admin-company-modal-button-secondary" onClick={() => setShowUpdateModal(false)}>Cancel</button>
+          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary">Update</button>
         </div>
       </form>
     </div>
@@ -442,59 +531,131 @@ const generateCompanyUrl = (name) => {
 )}
 
 {showAddModal && (
-  <div className="modal show d-block fade" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-    <div className="modal-dialog modal-lg modal-dialog-centered">
-      <div className="modal-content border-0 shadow-lg rounded-4">
-        <div className="modal-header bg-primary text-white rounded-top-4 px-4 py-3">
-          <h5 className="modal-title fw-bold">Add Company</h5>
-          <button type="button" className="btn-close btn-close-white" onClick={() => setShowAddModal(false)}></button>
+  <div className="admin-company-modal-overlay">
+    <div className="admin-company-modal admin-company-modal-lg">
+      <form onSubmit={handleSubmit}>
+        <div className="admin-company-modal-header">
+          <h5 className="admin-company-modal-title">Add Company</h5>
+          <button type="button" className="admin-company-modal-close" onClick={() => setShowAddModal(false)}>×</button>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body p-4">
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Company Name</label>
-                <input type="text" className="form-control" name="name" value={formData.name} onChange={handleFormChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Email</label>
-                <input type="email" className="form-control" name="email" value={formData.email} onChange={handleFormChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Mobile Number</label>
-                <input type="text" className="form-control" name="mobile" value={formData.mobile} onChange={handleFormChange} pattern="^[0-9]{10}$" maxLength="10" required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Contact Person Name</label>
-                <input type="text" className="form-control" name="pname" value={formData.pname} onChange={handleFormChange} required />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label fw-semibold">Address</label>
-                <input type="text" className="form-control" name="address" value={formData.address} onChange={handleFormChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Password</label>
-                <input type="password" className="form-control" name="password" value={formData.password} onChange={handleFormChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Logo (JPG, JPEG, PNG)</label>
-                <input type="file" accept=".jpg,.jpeg,.png" className="form-control" name="logo" onChange={handleFormChange} />
-              </div>
-              <div className="col-md-12">
-                <div className="form-check form-switch mt-2">
-                  <input className="form-check-input" type="checkbox" name="isActive" checked={formData.isActive} onChange={handleFormChange} />
-                  <label className="form-check-label">Active</label>
-                </div>
+        <div className="admin-company-modal-body">
+          <div className="admin-company-modal-grid">
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Company Name</label>
+              <input 
+                type="text" 
+                className="admin-company-modal-input" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleFormChange} 
+                placeholder="Enter company name"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Email</label>
+              <input 
+                type="email" 
+                className="admin-company-modal-input" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleFormChange} 
+                placeholder="Enter email address"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Mobile Number</label>
+              <input 
+                type="text" 
+                className="admin-company-modal-input" 
+                name="mobile" 
+                value={formData.mobile} 
+                onChange={handleFormChange} 
+                pattern="^[0-9]{10}$" 
+                maxLength="10" 
+                placeholder="Enter 10-digit mobile number"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Contact Person Name</label>
+              <input 
+                type="text" 
+                className="admin-company-modal-input" 
+                name="pname" 
+                value={formData.pname} 
+                onChange={handleFormChange} 
+                placeholder="Enter contact person name"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group admin-company-modal-form-group-full">
+              <label className="admin-company-modal-label">Address</label>
+              <input 
+                type="text" 
+                className="admin-company-modal-input" 
+                name="address" 
+                value={formData.address} 
+                onChange={handleFormChange} 
+                placeholder="Enter company address"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Password</label>
+              <input 
+                type="password" 
+                className="admin-company-modal-input" 
+                name="password" 
+                value={formData.password} 
+                onChange={handleFormChange} 
+                placeholder="Enter password"
+                required 
+              />
+            </div>
+            <div className="admin-company-modal-form-group">
+              <label className="admin-company-modal-label">Logo (JPG, JPEG, PNG)</label>
+              <input 
+                type="file" 
+                accept=".jpg,.jpeg,.png" 
+                className="admin-company-modal-file-input" 
+                name="logo" 
+                onChange={handleFormChange} 
+              />
+            </div>
+            <div className="admin-company-modal-form-group admin-company-modal-form-group-full">
+              <div className="admin-company-modal-switch">
+                <input 
+                  className="admin-company-modal-switch-input" 
+                  type="checkbox" 
+                  name="isActive" 
+                  checked={formData.isActive} 
+                  onChange={handleFormChange} 
+                />
+                <label className="admin-company-modal-switch-label">Active</label>
               </div>
             </div>
-            {errorMsg && <div className="alert alert-danger mt-3">{errorMsg}</div>}
           </div>
-          <div className="modal-footer p-3 bg-light rounded-bottom-4">
-            <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>Close</button>
-            <button type="submit" className="btn btn-primary">Save Company</button>
-          </div>
-        </form>
-      </div>
+          {errorMsg && (
+            <div className="admin-company-modal-alert admin-company-modal-alert-danger">{errorMsg}</div>
+          )}
+        </div>
+        <div className="admin-company-modal-footer">
+          <button 
+            type="button" 
+            className="admin-company-modal-button admin-company-modal-button-secondary" 
+            onClick={() => {
+              setShowAddModal(false);
+              setFormData({ name: '', logo: null, email: '', password: '', mobile: '', pname: '', address: '', isActive: true });
+              setErrorMsg('');
+            }}
+          >
+            Cancel
+          </button>
+          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary">Save Company</button>
+        </div>
+      </form>
     </div>
   </div>
 )}

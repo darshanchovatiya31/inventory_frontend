@@ -31,7 +31,7 @@ const AdminPanel = () => {
       case 'Dashboard':
         return <Dashboard />;
       case 'Company':
-        return <Company isOpen={isSidebarOpen}/>;
+        return <Company />;
       case 'Account Setting':
         return <ProfileSetting />;
       default:
@@ -40,7 +40,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="d-flex" style={{ background: '#f8f9fb', minHeight: '100vh', position: 'relative' }}>
+    <div className="d-flex" style={{ background: '#f8f9fb', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       {(isSidebarOpen || !isMobile) && (
         <>
           <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} currentPage={currentPage} setCurrentPage={setCurrentPage} isMobile={isMobile}/>
@@ -50,7 +50,7 @@ const AdminPanel = () => {
         </>
       )}
 
-      <div className="flex-grow-1" style={{ zIndex: 0 }}>
+      <div className="flex-grow-1" style={{ zIndex: 0, overflowY: 'auto', height: '100vh' }}>
         <AdminHeader title={currentPage} toggleSidebar={toggleSidebar} isMobile={isMobile} setCurrentPage={setCurrentPage} />
         <div className="p-3"> {renderContent()}</div>
       </div>

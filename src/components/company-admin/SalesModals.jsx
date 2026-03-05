@@ -1,3 +1,5 @@
+import './CompanySales.css';
+
 // Create Sale Modal Component
 export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, handleCreate, inventories }) => {
   return (
@@ -445,154 +447,114 @@ export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handl
 export const ViewSaleModal = ({ show, onHide, selectedSale }) => {
   if (!selectedSale) return null;
 
+  const getPaymentStatusClass = () => {
+    if (selectedSale.paymentStatus === 'completed') return 'company-sales-view-badge-success';
+    if (selectedSale.paymentStatus === 'pending') return 'company-sales-view-badge-warning';
+    return 'company-sales-view-badge-danger';
+  };
+
+  const getPaymentMethodClass = () => {
+    if (selectedSale.paymentMethod === 'cash') return 'company-sales-view-badge-success';
+    if (selectedSale.paymentMethod === 'online') return 'company-sales-view-badge-primary';
+    return 'company-sales-view-badge-info';
+  };
+
+  const getStatusClass = () => {
+    if (selectedSale.status === 'active') return 'company-sales-view-badge-success';
+    if (selectedSale.status === 'cancelled') return 'company-sales-view-badge-danger';
+    return 'company-sales-view-badge-warning';
+  };
+
   return (
     show && (
-      <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-          <div className="modal-content" style={{ borderRadius: '12px', border: 'none' }}>
-            <div className="modal-header" style={{ borderBottom: '1px solid #e5e7eb' }}>
-              <h5 className="modal-title fw-bold" style={{ color: '#1f2937' }}>Sale Details</h5>
-              <button type="button" className="btn-close" onClick={onHide}></button>
+      <div className="company-sales-modal-overlay" onClick={onHide}>
+        <div className="company-sales-modal company-sales-modal-sm" onClick={(e) => e.stopPropagation()}>
+          <div className="company-sales-modal-header">
+            <h5 className="company-sales-modal-title">Sale Details</h5>
+            <button type="button" className="company-sales-modal-close" onClick={onHide}>×</button>
+          </div>
+          <div className="company-sales-modal-body">
+            <div className="company-sales-view-field company-sales-view-field-full" style={{ marginBottom: '12px' }}>
+              <h6 className="company-sales-view-title">{selectedSale.customerName}</h6>
+              {selectedSale.customerEmail && (
+                <p className="company-sales-view-description">{selectedSale.customerEmail}</p>
+              )}
+              {selectedSale.customerPhone && (
+                <p className="company-sales-view-description" style={{ marginTop: '2px' }}>Phone: {selectedSale.customerPhone}</p>
+              )}
             </div>
-            <div className="modal-body" style={{ padding: '1.5rem' }}>
-              <div className="row g-3">
-                <div className="col-12">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <h6 className="fw-bold mb-1" style={{ color: '#1f2937', fontSize: '1.1rem' }}>{selectedSale.customerName}</h6>
-                    <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>
-                      {selectedSale.customerEmail || 'No email provided'}
-                    </p>
-                    {selectedSale.customerPhone && (
-                      <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>
-                        Phone: {selectedSale.customerPhone}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Product</label>
-                    <span className="fw-medium" style={{ fontSize: '0.875rem' }}>
-                      {selectedSale.inventoryId?.name || 'N/A'}
-                    </span>
-                    {selectedSale.inventoryId?.sku && (
-                      <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                        SKU: {selectedSale.inventoryId.sku}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Quantity Sold</label>
-                    <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.quantitySold}</span>
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Unit Price</label>
-                    <span className="fw-medium" style={{ fontSize: '0.875rem', color: '#4f46e5' }}>₹{selectedSale.unitPrice}</span>
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Total Amount</label>
-                    <span className="fw-bold" style={{ fontSize: '1rem', color: '#4f46e5' }}>₹{selectedSale.totalAmount}</span>
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Payment Method</label>
-                    <span 
-                      className={`badge ${selectedSale.paymentMethod === 'cash' ? 'bg-success' : selectedSale.paymentMethod === 'online' ? 'bg-primary' : 'bg-info'}`}
-                      style={{ fontSize: '0.75rem' }}
-                    >
-                      {selectedSale.paymentMethod}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Payment Status</label>
-                    <span 
-                      className={`badge ${selectedSale.paymentStatus === 'completed' ? 'bg-success' : selectedSale.paymentStatus === 'pending' ? 'bg-warning' : 'bg-danger'}`}
-                      style={{ fontSize: '0.75rem' }}
-                    >
-                      {selectedSale.paymentStatus}
-                    </span>
-                  </div>
-                </div>
-                
-                {selectedSale.transactionId && (
-                  <div className="col-12">
-                    <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                      <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Transaction ID</label>
-                      <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.transactionId}</span>
-                    </div>
-                  </div>
+            <div className="company-sales-view-grid">
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Product</span>
+                <span className="company-sales-view-value">{selectedSale.inventoryId?.name || 'N/A'}</span>
+                {selectedSale.inventoryId?.sku && (
+                  <span className="company-sales-view-value" style={{ fontSize: '11px', color: '#6b7280', display: 'block', marginTop: '2px' }}>
+                    SKU: {selectedSale.inventoryId.sku}
+                  </span>
                 )}
-                
-                {selectedSale.paymentReceivedBy && (
-                  <div className="col-6">
-                    <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                      <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Payment Received By</label>
-                      <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.paymentReceivedBy}</span>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="col-6">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Sale Date</label>
-                    <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{new Date(selectedSale.saleDate).toLocaleDateString()}</span>
-                  </div>
-                </div>
-                
-                <div className="col-12">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Status</label>
-                    <span 
-                      className={`badge ${selectedSale.status === 'active' ? 'bg-success' : selectedSale.status === 'cancelled' ? 'bg-danger' : 'bg-warning'}`}
-                      style={{ fontSize: '0.75rem' }}
-                    >
-                      {selectedSale.status}
-                    </span>
-                  </div>
-                </div>
-                
-                {selectedSale.notes && (
-                  <div className="col-12">
-                    <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                      <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Notes</label>
-                      <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{selectedSale.notes}</span>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="col-12">
-                  <div className="p-3 rounded" style={{ backgroundColor: '#f8fafc' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.75rem' }}>Created At</label>
-                    <span className="fw-medium" style={{ fontSize: '0.875rem' }}>{new Date(selectedSale.createdAt).toLocaleString()}</span>
-                  </div>
-                </div>
               </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Quantity</span>
+                <span className="company-sales-view-value">{selectedSale.quantitySold}</span>
+              </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Unit Price</span>
+                <span className="company-sales-view-value company-sales-view-value-primary">₹{selectedSale.unitPrice}</span>
+              </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Total Amount</span>
+                <span className="company-sales-view-value company-sales-view-value-primary">₹{selectedSale.totalAmount}</span>
+              </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Payment Method</span>
+                <span className={`company-sales-view-badge ${getPaymentMethodClass()}`}>
+                  {selectedSale.paymentMethod}
+                </span>
+              </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Payment Status</span>
+                <span className={`company-sales-view-badge ${getPaymentStatusClass()}`}>
+                  {selectedSale.paymentStatus}
+                </span>
+              </div>
+              {selectedSale.transactionId && (
+                <div className="company-sales-view-field company-sales-view-field-full">
+                  <span className="company-sales-view-label">Transaction ID</span>
+                  <span className="company-sales-view-value">{selectedSale.transactionId}</span>
+                </div>
+              )}
+              {selectedSale.paymentReceivedBy && (
+                <div className="company-sales-view-field">
+                  <span className="company-sales-view-label">Received By</span>
+                  <span className="company-sales-view-value">{selectedSale.paymentReceivedBy}</span>
+                </div>
+              )}
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Sale Date</span>
+                <span className="company-sales-view-value">{new Date(selectedSale.saleDate).toLocaleDateString()}</span>
+              </div>
+              <div className="company-sales-view-field">
+                <span className="company-sales-view-label">Status</span>
+                <span className={`company-sales-view-badge ${getStatusClass()}`}>
+                  {selectedSale.status || 'active'}
+                </span>
+              </div>
+              {selectedSale.notes && (
+                <div className="company-sales-view-field company-sales-view-field-full">
+                  <span className="company-sales-view-label">Notes</span>
+                  <span className="company-sales-view-value">{selectedSale.notes}</span>
+                </div>
+              )}
             </div>
-            <div className="modal-footer" style={{ borderTop: '1px solid #e5e7eb', padding: '1rem 1.5rem' }}>
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary me-2" 
-                onClick={onHide}
-                style={{ borderRadius: '8px', fontSize: '0.875rem' }}
-              >
-                Close
-              </button>
-            </div>
+          </div>
+          <div className="company-sales-modal-footer">
+            <button 
+              type="button" 
+              className="company-sales-modal-button company-sales-modal-button-secondary" 
+              onClick={onHide}
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>

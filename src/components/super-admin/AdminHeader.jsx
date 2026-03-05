@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
-import { FaUserCircle, FaBars } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaUserCircle, FaBars, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import './AdminHeader.css';
 
-const AdminHeader = ({ title, toggleSidebar, isMobile ,setCurrentPage}) => {
+const AdminHeader = ({ title, toggleSidebar, isMobile, setCurrentPage }) => {
   const admin = JSON.parse(localStorage.getItem('admin'));
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const handleLogout = () => {
     Swal.fire({
@@ -33,32 +51,63 @@ const AdminHeader = ({ title, toggleSidebar, isMobile ,setCurrentPage}) => {
         });
       }
     });
+    setDropdownOpen(false);
+  };
+
+  const handleAccountSetting = () => {
+    setCurrentPage('Account Setting');
+    setDropdownOpen(false);
   };
 
   return (
-    <div className="d-flex justify-content-between align-items-center mb-4 shadow-sm bg-white p-3 sticky-top" style={{ zIndex: 1050 }}>
-      <div className="d-flex align-items-center">
-        {isMobile && <FaBars size={22} onClick={toggleSidebar} className="me-3" style={{ cursor: 'pointer' }} />}
-        <h3 className="mb-0">{title}</h3>
+    <header className="admin-header">
+      <div className="admin-header-left">
+        {isMobile && (
+          <button 
+            className="admin-header-menu-btn" 
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            <FaBars />
+          </button>
+        )}
+        <h1 className="admin-header-title">{title}</h1>
       </div>
-      <div className="position-relative">
-        <div className="d-flex align-items-center" onClick={() => setDropdownOpen(!dropdownOpen)} style={{ cursor: 'pointer' }}>
-          <FaUserCircle size={38} className="me-2" />
-          <div className='d-none d-sm-block'>
-            <h5 className="mb-0 fw-bold text-truncate" style={{ fontSize: '16px' }}> Super Admin</h5>
-            <small style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize: '12px' }}>{admin?.emailId} </small>
+
+      <div className="admin-header-right" ref={dropdownRef}>
+        <div 
+          className="admin-header-user" 
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+        >
+          <div className="admin-header-avatar">
+            <FaUserCircle />
+          </div>
+          <div className="admin-header-user-info">
+            <div className="admin-header-user-name">Super Admin</div>
+            <div className="admin-header-user-email">{admin?.emailId || 'admin@example.com'}</div>
           </div>
         </div>
+
         {dropdownOpen && (
-          <div className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm" style={{ zIndex: 1000,width:"150px" }}>
-            <div className="px-3 py-2 border-bottom" style={{ cursor: 'pointer' }} onClick={() => { setDropdownOpen(false); setCurrentPage('Account Setting');}}>
-              Account Setting
+          <div className="admin-header-dropdown">
+            <div 
+              className="admin-header-dropdown-item" 
+              onClick={handleAccountSetting}
+            >
+              <FaCog className="admin-header-dropdown-icon" />
+              <span>Account Setting</span>
             </div>
-            <div className="px-3 py-2" style={{ cursor: 'pointer' }} onClick={handleLogout}> Logout</div>
+            <div 
+              className="admin-header-dropdown-item admin-header-dropdown-item-danger" 
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt className="admin-header-dropdown-icon" />
+              <span>Logout</span>
+            </div>
           </div>
         )}
       </div>
-    </div>
+    </header>
   );
 };
 
