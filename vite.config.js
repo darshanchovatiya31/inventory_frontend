@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ["icons/icon-152x152.png", "icons/icon-192x192.png", "icons/icon-512x512.png"],
       manifest: {
         name: "Inventory Management System",
-        short_name: "IMS",
+        short_name: "Inventory-MS",
         description: "A complete inventory management system",
         theme_color: "#1E3A8A",
         background_color: "#ffffff",
@@ -23,21 +23,36 @@ export default defineConfig({
             src: "/icons/icon-152x152.png",
             sizes: "152x152",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any"
           },
           {
             src: "/icons/icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any"
           },
           {
             src: "/icons/icon-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any"
+          },
+          {
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable"
+          },
+          {
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           },
         ],
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
       },
     }),
   ],
