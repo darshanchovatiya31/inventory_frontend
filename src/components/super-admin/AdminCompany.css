@@ -66,13 +66,142 @@
   color: #9ca3af;
 }
 
-.admin-company-loading {
+/* Skeleton Loader */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.admin-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+.admin-company-skeleton-table {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-company-skeleton-table-header {
+  display: grid;
+  grid-template-columns: 90px 150px 200px 200px 100px 110px 180px;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-company-skeleton-table-header-cell {
+  height: 16px;
+}
+
+.admin-company-skeleton-table-row {
+  display: grid;
+  grid-template-columns: 90px 150px 200px 200px 100px 110px 180px;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.admin-company-skeleton-table-cell {
+  height: 20px;
+}
+
+.admin-company-skeleton-table-cell-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+
+.admin-company-skeleton-cards {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: #6b7280;
-  font-size: 15px;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.admin-company-skeleton-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-company-skeleton-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-company-skeleton-card-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.admin-company-skeleton-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-company-skeleton-card-name {
+  width: 60%;
+  height: 20px;
+}
+
+.admin-company-skeleton-card-status {
+  width: 60px;
+  height: 24px;
+  border-radius: 20px;
+}
+
+.admin-company-skeleton-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-company-skeleton-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-company-skeleton-card-field-label {
+  width: 80px;
+  height: 12px;
+}
+
+.admin-company-skeleton-card-field-value {
+  width: 100%;
+  height: 14px;
+}
+
+.admin-company-skeleton-card-footer {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.admin-company-skeleton-card-button {
+  flex: 1;
+  height: 36px;
+  border-radius: 6px;
 }
 
 .admin-company-table-container {
@@ -526,8 +655,35 @@
   color: #ffffff;
 }
 
-.admin-company-modal-button-primary:hover {
+.admin-company-modal-button-primary:hover:not(:disabled) {
   background-color: #1e40af;
+}
+
+.admin-company-modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-company-modal-button-primary:disabled {
+  background-color: #9ca3af;
+}
+
+.admin-company-modal-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Mobile Card View */

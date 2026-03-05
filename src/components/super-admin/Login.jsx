@@ -42,8 +42,19 @@ const Login = () => {
     <div className="admin-login-container">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <div className="admin-login-icon">
-            <FaShieldAlt />
+          <div className="admin-login-logo-wrapper">
+            <img 
+              src="/icons/icon-192x192.png" 
+              alt="IMS Logo" 
+              className="admin-login-logo"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            <div className="admin-login-icon" style={{ display: 'none' }}>
+              <FaShieldAlt />
+            </div>
           </div>
           <h2 className="admin-login-title">Admin Login</h2>
           <p className="admin-login-subtitle">Sign in to access the admin panel</p>

@@ -50,9 +50,17 @@ const CompanyDashboard = ({setCurrentPage,toggleSidebar}) => {
 
       <div className="company-dashboard">
         {loading ? (
-          <div className="company-dashboard-loading">
-            <div className="company-dashboard-spinner"></div>
-            <p className="company-dashboard-loading-text">Loading dashboard...</p>
+          <div className="company-dashboard-skeleton-grid">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="company-dashboard-skeleton-card">
+                <div className="company-skeleton company-dashboard-skeleton-icon"></div>
+                <div className="company-dashboard-skeleton-content">
+                  <div className="company-skeleton company-dashboard-skeleton-label"></div>
+                  <div className="company-skeleton company-dashboard-skeleton-value"></div>
+                  <div className="company-skeleton company-dashboard-skeleton-description"></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="company-dashboard-grid">

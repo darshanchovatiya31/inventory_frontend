@@ -206,6 +206,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [stockHistory, setStockHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [adjustFormData, setAdjustFormData] = useState({
     type: 'add',
     quantity: 0,
@@ -230,6 +231,9 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [filterParams, setFilterParams] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -282,6 +286,8 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   };
 
   const fetchStockHistory = async (inventoryId) => {
+    setLoadingHistory(true);
+    setStockHistory([]);
     try {
       const token = localStorage.getItem('companyToken');
       const res = await axios.get(`${BaseUrl}/inventory/history/${inventoryId}`, {
@@ -294,6 +300,8 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
       }
     } catch (error) {
       console.error("Error fetching stock history:", error);
+    } finally {
+      setLoadingHistory(false);
     }
   };
 
@@ -318,6 +326,7 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   };
 
   const handleCreate = async () => {
+    setSubmitting(true);
     try {
       const token = localStorage.getItem('companyToken');
       const data = new FormData();
@@ -377,10 +386,13 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         timer: 3000, // auto close after 3 seconds
         timerProgressBar: true,
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
+    setUpdating(true);
     try {
       const token = localStorage.getItem('companyToken');
       const data = new FormData();
@@ -429,10 +441,13 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         timer: 3000, // auto close after 3 seconds
         timerProgressBar: true,
       });
+    } finally {
+      setUpdating(false);
     }
   };
 
   const handleAdjust = async () => {
+    setAdjusting(true);
     try {
       const token = localStorage.getItem('companyToken');
       const res = await axios.post(`${BaseUrl}/inventory/adjustment`, { ...adjustFormData, inventoryId: selectedItem._id }, {
@@ -482,6 +497,8 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         timer: 3000, // auto close after 3 seconds
         timerProgressBar: true,
       });
+    } finally {
+      setAdjusting(false);
     }
   };
 
@@ -691,105 +708,180 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
           </div>
 
           {/* Stats Cards */}
-          <div className="company-inventory-stats">
-            <div className="company-inventory-stat-card">
-              <div className="company-inventory-stat-header">
-                <span className="company-inventory-stat-badge">Total</span>
-              </div>
-              <div className="company-inventory-stat-value">{stats.totalItems}</div>
-              <p className="company-inventory-stat-label">Items</p>
+          {loading ? (
+            <div className="company-inventory-skeleton-stats">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="company-inventory-skeleton-stat-card">
+                  <div className="company-skeleton company-inventory-skeleton-stat-badge"></div>
+                  <div className="company-skeleton company-inventory-skeleton-stat-value"></div>
+                  <div className="company-skeleton company-inventory-skeleton-stat-label"></div>
+                </div>
+              ))}
             </div>
-            <div className="company-inventory-stat-card">
-              <div className="company-inventory-stat-header">
-                <span className="company-inventory-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+          ) : (
+            <div className="company-inventory-stats">
+              <div className="company-inventory-stat-card">
+                <div className="company-inventory-stat-header">
+                  <span className="company-inventory-stat-badge">Total</span>
+                </div>
+                <div className="company-inventory-stat-value">{stats.totalItems}</div>
+                <p className="company-inventory-stat-label">Items</p>
               </div>
-              <div className="company-inventory-stat-value">{stats.monthlyItems}</div>
-              <p className="company-inventory-stat-label">Added</p>
-            </div>
-            <div className="company-inventory-stat-card">
-              <div className="company-inventory-stat-header">
-                <span className="company-inventory-stat-badge">Value</span>
+              <div className="company-inventory-stat-card">
+                <div className="company-inventory-stat-header">
+                  <span className="company-inventory-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+                </div>
+                <div className="company-inventory-stat-value">{stats.monthlyItems}</div>
+                <p className="company-inventory-stat-label">Added</p>
               </div>
-              <div className="company-inventory-stat-value">₹{stats.totalValue.toFixed(2)}</div>
-              <p className="company-inventory-stat-label">Total</p>
-            </div>
-            <div className="company-inventory-stat-card">
-              <div className="company-inventory-stat-header">
-                <span className="company-inventory-stat-badge">Alert</span>
+              <div className="company-inventory-stat-card">
+                <div className="company-inventory-stat-header">
+                  <span className="company-inventory-stat-badge">Value</span>
+                </div>
+                <div className="company-inventory-stat-value">₹{stats.totalValue.toFixed(2)}</div>
+                <p className="company-inventory-stat-label">Total</p>
               </div>
-              <div className="company-inventory-stat-value">{stats.lowStock}</div>
-              <p className="company-inventory-stat-label">Low Stock</p>
+              <div className="company-inventory-stat-card">
+                <div className="company-inventory-stat-header">
+                  <span className="company-inventory-stat-badge">Alert</span>
+                </div>
+                <div className="company-inventory-stat-value">{stats.lowStock}</div>
+                <p className="company-inventory-stat-label">Low Stock</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filter Section */}
-          <div className="company-inventory-filters">
-            <div className="company-inventory-filter-group">
-              <select 
-                className="company-inventory-filter-input" 
-                value={filterType} 
-                onChange={handleFilterTypeChange}
-              >
-                <option value="all">All Time</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-                <option value="custom">Custom</option>
-              </select>
+          {loading ? (
+            <div className="company-inventory-skeleton-filters">
+              <div className="company-skeleton company-inventory-skeleton-filter-input"></div>
+              <div className="company-skeleton company-inventory-skeleton-filter-input"></div>
+              <div className="company-skeleton company-inventory-skeleton-filter-input"></div>
             </div>
-            {filterType === 'custom' && (
-              <>
-                <div className="company-inventory-filter-group">
-                  <input 
-                    type="date" 
-                    className="company-inventory-filter-input" 
-                    value={fromDate} 
-                    onChange={(e) => setFromDate(e.target.value)}
-                  />
-                </div>
-                <div className="company-inventory-filter-group">
-                  <input 
-                    type="date" 
-                    className="company-inventory-filter-input" 
-                    value={toDate} 
-                    onChange={(e) => setToDate(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            <div className="company-inventory-filter-group">
-              <input 
-                type="text" 
-                className="company-inventory-filter-input" 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name"
-              />
+          ) : (
+            <div className="company-inventory-filters">
+              <div className="company-inventory-filter-group">
+                <select 
+                  className="company-inventory-filter-input" 
+                  value={filterType} 
+                  onChange={handleFilterTypeChange}
+                >
+                  <option value="all">All Time</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              {filterType === 'custom' && (
+                <>
+                  <div className="company-inventory-filter-group">
+                    <input 
+                      type="date" 
+                      className="company-inventory-filter-input" 
+                      value={fromDate} 
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="company-inventory-filter-group">
+                    <input 
+                      type="date" 
+                      className="company-inventory-filter-input" 
+                      value={toDate} 
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+              <div className="company-inventory-filter-group">
+                <input 
+                  type="text" 
+                  className="company-inventory-filter-input" 
+                  value={searchTerm} 
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by name"
+                />
+              </div>
+              <div className="company-inventory-filter-actions">
+                <button 
+                  className="company-inventory-filter-button company-inventory-filter-button-primary" 
+                  onClick={applyFilters}
+                >
+                  <FaFilter size={14} />
+                  Apply
+                </button>
+                <button 
+                  className="company-inventory-filter-button company-inventory-filter-button-secondary" 
+                  onClick={clearFilters}
+                >
+                  Clear
+                </button>
+              </div>
             </div>
-            <div className="company-inventory-filter-actions">
-              <button 
-                className="company-inventory-filter-button company-inventory-filter-button-primary" 
-                onClick={applyFilters}
-              >
-                <FaFilter size={14} />
-                Apply
-              </button>
-              <button 
-                className="company-inventory-filter-button company-inventory-filter-button-secondary" 
-                onClick={clearFilters}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Inventory List */}
         <div className="company-inventory-table-container">
           {loading ? (
-            <div className="company-inventory-loading">
-              <div className="company-inventory-spinner"></div>
-              <p className="company-inventory-loading-text">Loading inventories...</p>
-            </div>
+            <>
+              {/* Desktop Table Skeleton */}
+              <div className="company-inventory-table-wrapper">
+                <div className="company-inventory-skeleton-table">
+                  <div className="company-inventory-skeleton-table-header">
+                    {[...Array(7)].map((_, index) => (
+                      <div key={index} className="company-skeleton company-inventory-skeleton-table-header-cell"></div>
+                    ))}
+                  </div>
+                  {[...Array(5)].map((_, rowIndex) => (
+                    <div key={rowIndex} className="company-inventory-skeleton-table-row">
+                      <div className="company-skeleton company-inventory-skeleton-table-cell-image"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-inventory-skeleton-table-cell"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Mobile Card Skeleton */}
+              <div className="company-inventory-skeleton-cards">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className="company-inventory-skeleton-card">
+                    <div className="company-inventory-skeleton-card-header">
+                      <div className="company-skeleton company-inventory-skeleton-card-image"></div>
+                      <div className="company-inventory-skeleton-card-info">
+                        <div className="company-skeleton company-inventory-skeleton-card-name"></div>
+                        <div className="company-skeleton company-inventory-skeleton-card-sku"></div>
+                        <div className="company-inventory-skeleton-card-details">
+                          <div className="company-skeleton company-inventory-skeleton-card-detail"></div>
+                          <div className="company-skeleton company-inventory-skeleton-card-detail"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="company-inventory-skeleton-card-fields">
+                      <div className="company-inventory-skeleton-card-field">
+                        <div className="company-skeleton company-inventory-skeleton-card-field-label"></div>
+                        <div className="company-skeleton company-inventory-skeleton-card-field-value"></div>
+                      </div>
+                      <div className="company-inventory-skeleton-card-field">
+                        <div className="company-skeleton company-inventory-skeleton-card-field-label"></div>
+                        <div className="company-skeleton company-inventory-skeleton-card-field-value"></div>
+                      </div>
+                    </div>
+                    <div className="company-inventory-skeleton-card-footer">
+                      <div className="company-skeleton company-inventory-skeleton-card-status"></div>
+                      <div className="company-inventory-skeleton-card-actions">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="company-skeleton company-inventory-skeleton-card-action"></div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : inventories.length === 0 ? (
             <div className="company-inventory-no-data">
               <div className="company-inventory-no-data-icon">
@@ -981,14 +1073,23 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                     type="button" 
                     className="company-inventory-modal-button company-inventory-modal-button-secondary" 
                     onClick={() => setShowCreateModal(false)}
+                    disabled={submitting}
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit" 
                     className="company-inventory-modal-button company-inventory-modal-button-primary"
+                    disabled={submitting}
                   >
-                    Create Item
+                    {submitting ? (
+                      <>
+                        <span className="company-inventory-modal-spinner"></span>
+                        Adding...
+                      </>
+                    ) : (
+                      'Create Item'
+                    )}
                   </button>
                 </div>
               </form>
@@ -1101,14 +1202,23 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                     type="button" 
                     className="company-inventory-modal-button company-inventory-modal-button-secondary" 
                     onClick={() => setShowEditModal(false)}
+                    disabled={updating}
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit" 
                     className="company-inventory-modal-button company-inventory-modal-button-primary"
+                    disabled={updating}
                   >
-                    Update Item
+                    {updating ? (
+                      <>
+                        <span className="company-inventory-modal-spinner"></span>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Item'
+                    )}
                   </button>
                 </div>
               </form>
@@ -1199,12 +1309,17 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         <div className="company-inventory-modal-overlay" onClick={() => setShowHistoryModal(false)}>
           <div className="company-inventory-modal company-inventory-modal-lg" onClick={(e) => e.stopPropagation()}>
             <div className="company-inventory-modal-header">
-              <h5 className="company-inventory-modal-title">Stock History for {selectedItem.name}</h5>
+              <h5 className="company-inventory-modal-title">Stock History</h5>
               <button type="button" className="company-inventory-modal-close" onClick={() => setShowHistoryModal(false)}>×</button>
             </div>
             <div className="company-inventory-modal-body">
-              {stockHistory.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+              {loadingHistory ? (
+                <div className="company-inventory-history-loading">
+                  <div className="company-inventory-history-spinner"></div>
+                  <p className="company-inventory-history-loading-text">Loading history...</p>
+                </div>
+              ) : stockHistory.length === 0 ? (
+                <div className="company-inventory-history-empty-state">
                   <FaHistory size={48} style={{ color: '#9ca3af', marginBottom: '16px' }} />
                   <p style={{ color: '#6b7280', margin: 0 }}>No stock adjustments found</p>
                 </div>
@@ -1369,14 +1484,23 @@ const Inventorys = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                     type="button" 
                     className="company-inventory-modal-button company-inventory-modal-button-secondary" 
                     onClick={() => setShowAdjustModal(false)}
+                    disabled={adjusting}
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit" 
                     className="company-inventory-modal-button company-inventory-modal-button-primary"
+                    disabled={adjusting}
                   >
-                    Adjust Stock
+                    {adjusting ? (
+                      <>
+                        <span className="company-inventory-modal-spinner"></span>
+                        Adjusting...
+                      </>
+                    ) : (
+                      'Adjust Stock'
+                    )}
                   </button>
                 </div>
               </form>

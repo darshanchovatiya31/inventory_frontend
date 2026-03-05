@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BaseUrl } from '../service/Uri';
 import './AdminProfileSetting.css';
 
 const ProfileSetting = () => {
+  const [initialLoading, setInitialLoading] = useState(true);
   const storedAdmin = JSON.parse(localStorage.getItem('admin'));
   const token = localStorage.getItem('adminToken');
   const [emailId, setEmailId] = useState(storedAdmin?.emailId || '');
@@ -11,6 +12,14 @@ const ProfileSetting = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Simulate loading time for consistency
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -44,9 +53,21 @@ const ProfileSetting = () => {
   return (
     <div className="admin-profile-setting">
       <div className="admin-profile-setting-container">
-        <div className="admin-profile-setting-card">
-          <h2 className="admin-profile-setting-title">Account Settings</h2>
-          <form onSubmit={handleUpdate}>
+        {initialLoading ? (
+          <div className="admin-profile-setting-skeleton-card">
+            <div className="admin-skeleton admin-profile-setting-skeleton-title"></div>
+            {[...Array(2)].map((_, index) => (
+              <div key={index} className="admin-profile-setting-skeleton-form-group">
+                <div className="admin-skeleton admin-profile-setting-skeleton-label"></div>
+                <div className="admin-skeleton admin-profile-setting-skeleton-input"></div>
+              </div>
+            ))}
+            <div className="admin-skeleton admin-profile-setting-skeleton-button"></div>
+          </div>
+        ) : (
+          <div className="admin-profile-setting-card">
+            <h2 className="admin-profile-setting-title">Account Settings</h2>
+            <form onSubmit={handleUpdate}>
             <div className="admin-profile-setting-form-group">
               <label className="admin-profile-setting-label">Email</label>
               <input 
@@ -87,6 +108,7 @@ const ProfileSetting = () => {
             </button>
           </form>
         </div>
+        )}
       </div>
     </div>
   );

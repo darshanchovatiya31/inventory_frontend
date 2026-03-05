@@ -106,6 +106,8 @@ const Company = () => {
   const [showFieldModal, setShowFieldModal] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [submitting, setSubmitting] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     fetchCompanies();
@@ -161,6 +163,8 @@ const handleFormChange = (e) => {
 
 const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setErrorMsg('');
     try {
       const token = localStorage.getItem('adminToken');
       const form = new FormData();
@@ -183,6 +187,9 @@ const handleSubmit = async (e) => {
     }
     } catch (error) {
       console.error('Error adding company:', error);
+      setErrorMsg(error.response?.data?.message || 'Failed to create company.');
+    } finally {
+      setSubmitting(false);
     }
 };
 
@@ -267,6 +274,8 @@ const handleUpdateChange = (e) => {
 const handleUpdateSubmit = async (e) => {
   e.preventDefault();
   if (!currentCompany) return;
+  setUpdating(true);
+  setUpdateErrorMsg('');
   try {
     const token = localStorage.getItem('adminToken');
     const form = new FormData();
@@ -291,6 +300,9 @@ const handleUpdateSubmit = async (e) => {
     }
   } catch (err) {
     console.error("Update Error:", err);
+    setUpdateErrorMsg(err.response?.data?.message || 'Update failed.');
+  } finally {
+    setUpdating(false);
   }
 };
 
@@ -338,7 +350,61 @@ const generateCompanyUrl = (name) => {
       </div>
 
       {loading ? (
-        <div className="admin-company-loading">Loading...</div>
+        <>
+          {/* Desktop Table Skeleton */}
+          <div className="admin-company-table-container">
+            <div className="admin-company-skeleton-table">
+              <div className="admin-company-skeleton-table-header">
+                {[...Array(7)].map((_, index) => (
+                  <div key={index} className="admin-skeleton admin-company-skeleton-table-header-cell"></div>
+                ))}
+              </div>
+              {[...Array(5)].map((_, rowIndex) => (
+                <div key={rowIndex} className="admin-company-skeleton-table-row">
+                  <div className="admin-skeleton admin-company-skeleton-table-cell-logo"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                  <div className="admin-skeleton admin-company-skeleton-table-cell"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Mobile Card Skeleton */}
+          <div className="admin-company-cards-container">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="admin-company-skeleton-card">
+                <div className="admin-company-skeleton-card-header">
+                  <div className="admin-skeleton admin-company-skeleton-card-logo"></div>
+                  <div className="admin-company-skeleton-card-info">
+                    <div className="admin-skeleton admin-company-skeleton-card-name"></div>
+                    <div className="admin-skeleton admin-company-skeleton-card-status"></div>
+                  </div>
+                </div>
+                <div className="admin-company-skeleton-card-body">
+                  <div className="admin-company-skeleton-card-field">
+                    <div className="admin-skeleton admin-company-skeleton-card-field-label"></div>
+                    <div className="admin-skeleton admin-company-skeleton-card-field-value"></div>
+                  </div>
+                  <div className="admin-company-skeleton-card-field">
+                    <div className="admin-skeleton admin-company-skeleton-card-field-label"></div>
+                    <div className="admin-skeleton admin-company-skeleton-card-field-value"></div>
+                  </div>
+                  <div className="admin-company-skeleton-card-field">
+                    <div className="admin-skeleton admin-company-skeleton-card-field-label"></div>
+                    <div className="admin-skeleton admin-company-skeleton-card-field-value"></div>
+                  </div>
+                </div>
+                <div className="admin-company-skeleton-card-footer">
+                  <div className="admin-skeleton admin-company-skeleton-card-button"></div>
+                  <div className="admin-skeleton admin-company-skeleton-card-button"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <>
           {/* Desktop Table View */}
@@ -522,8 +588,17 @@ const generateCompanyUrl = (name) => {
           )}
         </div>
         <div className="admin-company-modal-footer">
-          <button type="button" className="admin-company-modal-button admin-company-modal-button-secondary" onClick={() => setShowUpdateModal(false)}>Cancel</button>
-          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary">Update</button>
+          <button type="button" className="admin-company-modal-button admin-company-modal-button-secondary" onClick={() => setShowUpdateModal(false)} disabled={updating}>Cancel</button>
+          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary" disabled={updating}>
+            {updating ? (
+              <>
+                <span className="admin-company-modal-spinner"></span>
+                Updating...
+              </>
+            ) : (
+              'Update'
+            )}
+          </button>
         </div>
       </form>
     </div>
@@ -650,10 +725,20 @@ const generateCompanyUrl = (name) => {
               setFormData({ name: '', logo: null, email: '', password: '', mobile: '', pname: '', address: '', isActive: true });
               setErrorMsg('');
             }}
+            disabled={submitting}
           >
             Cancel
           </button>
-          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary">Save Company</button>
+          <button type="submit" className="admin-company-modal-button admin-company-modal-button-primary" disabled={submitting}>
+            {submitting ? (
+              <>
+                <span className="admin-company-modal-spinner"></span>
+                Adding...
+              </>
+            ) : (
+              'Save Company'
+            )}
+          </button>
         </div>
       </form>
     </div>

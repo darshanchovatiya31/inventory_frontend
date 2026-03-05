@@ -7,25 +7,35 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
+      includeAssets: ["icons/icon-152x152.png", "icons/icon-192x192.png", "icons/icon-512x512.png"],
       manifest: {
-        name: "Inventory Management",
-        short_name: "Inventory",
+        name: "Inventory Management System",
+        short_name: "IMS",
         description: "A complete inventory management system",
-        theme_color: "#4CAF50",
+        theme_color: "#1E3A8A",
         background_color: "#ffffff",
         display: "standalone",
+        orientation: "portrait",
         start_url: "/",
+        scope: "/",
         icons: [
+          {
+            src: "/icons/icon-152x152.png",
+            sizes: "152x152",
+            type: "image/png",
+            purpose: "any maskable"
+          },
           {
             src: "/icons/icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "any maskable"
           },
           {
             src: "/icons/icon-512x512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any maskable"
           },
         ],
       },

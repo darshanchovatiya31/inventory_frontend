@@ -1,7 +1,7 @@
 import './CompanySales.css';
 
 // Create Sale Modal Component
-export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, handleCreate, inventories }) => {
+export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, handleCreate, inventories, submitting = false }) => {
   return (
     show && (
       <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -203,6 +203,7 @@ export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, han
                 className="btn btn-outline-secondary me-2" 
                 onClick={onHide}
                 style={{ borderRadius: '8px', fontSize: '0.875rem' }}
+                disabled={submitting}
               >
                 Cancel
               </button>
@@ -211,8 +212,16 @@ export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, han
                 className="btn btn-primary" 
                 onClick={handleCreate}
                 style={{ borderRadius: '8px', backgroundColor: '#4f46e5', border: 'none', fontSize: '0.875rem' }}
+                disabled={submitting}
               >
-                Create Sale
+                {submitting ? (
+                  <>
+                    <span className="company-sales-modal-spinner"></span>
+                    Creating...
+                  </>
+                ) : (
+                  'Create Sale'
+                )}
               </button>
             </div>
           </div>
@@ -223,7 +232,7 @@ export const CreateSaleModal = ({ show, onHide, formData, handleInputChange, han
 };
 
 // Edit Sale Modal Component
-export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handleUpdate, inventories }) => {
+export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handleUpdate, inventories, updating = false }) => {
   return (
     show && (
       <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -424,6 +433,7 @@ export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handl
                 className="btn btn-outline-secondary me-2" 
                 onClick={onHide}
                 style={{ borderRadius: '8px', fontSize: '0.875rem' }}
+                disabled={updating}
               >
                 Cancel
               </button>
@@ -432,8 +442,16 @@ export const EditSaleModal = ({ show, onHide, formData, handleInputChange, handl
                 className="btn btn-primary" 
                 onClick={handleUpdate}
                 style={{ borderRadius: '8px', backgroundColor: '#4f46e5', border: 'none', fontSize: '0.875rem' }}
+                disabled={updating}
               >
-                Update Sale
+                {updating ? (
+                  <>
+                    <span className="company-sales-modal-spinner"></span>
+                    Updating...
+                  </>
+                ) : (
+                  'Update Sale'
+                )}
               </button>
             </div>
           </div>

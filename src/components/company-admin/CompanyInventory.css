@@ -211,27 +211,209 @@
   overflow: hidden;
 }
 
-.company-inventory-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  gap: 16px;
+/* Skeleton Loader */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
-.company-inventory-spinner {
+.company-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+.company-inventory-skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.company-inventory-skeleton-stat-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.company-inventory-skeleton-stat-badge {
+  width: 50px;
+  height: 18px;
+  margin-bottom: 8px;
+  margin-left: auto;
+}
+
+.company-inventory-skeleton-stat-value {
+  width: 80px;
+  height: 28px;
+  margin-bottom: 4px;
+}
+
+.company-inventory-skeleton-stat-label {
+  width: 60px;
+  height: 14px;
+}
+
+.company-inventory-skeleton-filters {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.company-inventory-skeleton-filter-input {
+  height: 40px;
+}
+
+.company-inventory-skeleton-table {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.company-inventory-skeleton-table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-inventory-skeleton-table-header-cell {
+  height: 16px;
+}
+
+.company-inventory-skeleton-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.company-inventory-skeleton-table-cell {
+  height: 20px;
+}
+
+.company-inventory-skeleton-table-cell-image {
   width: 40px;
   height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #1E3A8A;
-  border-radius: 50%;
+  border-radius: 6px;
 }
 
-.company-inventory-loading-text {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
+.company-inventory-skeleton-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.company-inventory-skeleton-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.company-inventory-skeleton-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.company-inventory-skeleton-card-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.company-inventory-skeleton-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-inventory-skeleton-card-name {
+  width: 60%;
+  height: 18px;
+}
+
+.company-inventory-skeleton-card-sku {
+  width: 40%;
+  height: 14px;
+}
+
+.company-inventory-skeleton-card-details {
+  display: flex;
+  gap: 12px;
+}
+
+.company-inventory-skeleton-card-detail {
+  width: 50px;
+  height: 14px;
+}
+
+.company-inventory-skeleton-card-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.company-inventory-skeleton-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-inventory-skeleton-card-field-label {
+  width: 60px;
+  height: 12px;
+}
+
+.company-inventory-skeleton-card-field-value {
+  width: 80px;
+  height: 14px;
+}
+
+.company-inventory-skeleton-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.company-inventory-skeleton-card-status {
+  width: 60px;
+  height: 24px;
+  border-radius: 20px;
+}
+
+.company-inventory-skeleton-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.company-inventory-skeleton-card-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
 }
 
 .company-inventory-no-data {
@@ -858,8 +1040,35 @@
   color: #ffffff;
 }
 
-.company-inventory-modal-button-primary:hover {
+.company-inventory-modal-button-primary:hover:not(:disabled) {
   background-color: #1e40af;
+}
+
+.company-inventory-modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.company-inventory-modal-button-primary:disabled {
+  background-color: #9ca3af;
+}
+
+.company-inventory-modal-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* View Modal Specific */
@@ -910,6 +1119,35 @@
 }
 
 /* History Modal */
+.company-inventory-history-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.company-inventory-history-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #1E3A8A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.company-inventory-history-loading-text {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+.company-inventory-history-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
 .company-inventory-history-table-wrapper {
   overflow-x: auto;
 }

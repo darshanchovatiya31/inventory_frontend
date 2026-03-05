@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BaseUrl } from '../service/Uri';
 import CommonHeader from './CommonHeader';
 import './CompanyProfileSetting.css';
 
 const ProfileSetting = ({ toggleSidebar, setCurrentPage }) => {
+  const [loading, setLoading] = useState(true);
   const company = JSON.parse(localStorage.getItem('company'));
   const [formData, setFormData] = useState({
-    name: company.name,
-    email: company.email,
-    mobile: company.mobile || '',
-    pname: company.pname || '',
-    address: company.address || '',
+    name: company?.name || '',
+    email: company?.email || '',
+    mobile: company?.mobile || '',
+    pname: company?.pname || '',
+    address: company?.address || '',
     logo: null
   });
   const [errorMsg, setErrorMsg] = useState('');
@@ -21,8 +22,18 @@ const ProfileSetting = ({ toggleSidebar, setCurrentPage }) => {
   newPassword: '',
   confirmPassword: ''
 });
-const [passwordError, setPasswordError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  useEffect(() => {
+    // Simulate loading time for consistency
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -38,6 +49,9 @@ const [passwordSuccess, setPasswordSuccess] = useState('');
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
+    setUpdatingProfile(true);
+    setErrorMsg('');
+    setSuccessMsg('');
     try {
       const token = localStorage.getItem('companyToken');
       const form = new FormData();
@@ -63,6 +77,8 @@ const [passwordSuccess, setPasswordSuccess] = useState('');
     } catch (err) {
       console.error('Update Error:', err);
       setErrorMsg('Something went wrong.');
+    } finally {
+      setUpdatingProfile(false);
     }
   };
 
@@ -80,6 +96,7 @@ const handlePasswordSubmit = async (e) => {
     setPasswordError('New password and confirm password do not match.');
     return;
   }
+  setUpdatingPassword(true);
   try {
     const token = localStorage.getItem('companyToken');
     const res = await axios.put(`${BaseUrl}/company/change-password/${company._id}`, passwordData, {
@@ -94,6 +111,8 @@ const handlePasswordSubmit = async (e) => {
   } catch (err) {
     console.error('Password Update Error:', err);
     setPasswordError('Something went wrong.');
+  } finally {
+    setUpdatingPassword(false);
   }
 };
 
@@ -101,9 +120,35 @@ const handlePasswordSubmit = async (e) => {
     <div className="container-fluid p-0">
       <CommonHeader title="Account Setting" company={company} toggleSidebar={toggleSidebar} setCurrentPage={setCurrentPage} />
       <div className="company-profile-setting">
-        <div className="company-profile-setting-grid">
-          {/* Profile Settings Card */}
-          <div className="company-profile-setting-card">
+        {loading ? (
+          <div className="company-profile-setting-skeleton-grid">
+            {/* Profile Settings Skeleton */}
+            <div className="company-profile-setting-skeleton-card">
+              <div className="company-skeleton company-profile-setting-skeleton-title"></div>
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="company-profile-setting-skeleton-form-group">
+                  <div className="company-skeleton company-profile-setting-skeleton-label"></div>
+                  <div className="company-skeleton company-profile-setting-skeleton-input"></div>
+                </div>
+              ))}
+              <div className="company-skeleton company-profile-setting-skeleton-button"></div>
+            </div>
+            {/* Change Password Skeleton */}
+            <div className="company-profile-setting-skeleton-card">
+              <div className="company-skeleton company-profile-setting-skeleton-title"></div>
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="company-profile-setting-skeleton-form-group">
+                  <div className="company-skeleton company-profile-setting-skeleton-label"></div>
+                  <div className="company-skeleton company-profile-setting-skeleton-input"></div>
+                </div>
+              ))}
+              <div className="company-skeleton company-profile-setting-skeleton-button"></div>
+            </div>
+          </div>
+        ) : (
+          <div className="company-profile-setting-grid">
+            {/* Profile Settings Card */}
+            <div className="company-profile-setting-card">
             <h2 className="company-profile-setting-title">Profile Settings</h2>
             <form onSubmit={handleUpdateSubmit}>
               <div className="company-profile-setting-form-group">
@@ -190,8 +235,15 @@ const handlePasswordSubmit = async (e) => {
                   {successMsg}
                 </div>
               )}
-              <button type="submit" className="company-profile-setting-button">
-                Update Profile
+              <button type="submit" className="company-profile-setting-button" disabled={updatingProfile}>
+                {updatingProfile ? (
+                  <>
+                    <span className="company-profile-setting-spinner"></span>
+                    Updating...
+                  </>
+                ) : (
+                  'Update Profile'
+                )}
               </button>
             </form>
           </div>
@@ -242,12 +294,20 @@ const handlePasswordSubmit = async (e) => {
                   {passwordSuccess}
                 </div>
               )}
-              <button type="submit" className="company-profile-setting-button">
-                Change Password
+              <button type="submit" className="company-profile-setting-button" disabled={updatingPassword}>
+                {updatingPassword ? (
+                  <>
+                    <span className="company-profile-setting-spinner"></span>
+                    Updating...
+                  </>
+                ) : (
+                  'Change Password'
+                )}
               </button>
             </form>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

@@ -135,11 +135,88 @@
   opacity: 0.6;
 }
 
+.company-profile-setting-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .company-profile-setting-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Skeleton Loader */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.company-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+.company-profile-setting-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.company-profile-setting-skeleton-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.company-profile-setting-skeleton-title {
+  width: 200px;
+  height: 28px;
+  margin-bottom: 24px;
+}
+
+.company-profile-setting-skeleton-form-group {
+  margin-bottom: 20px;
+}
+
+.company-profile-setting-skeleton-label {
+  width: 150px;
+  height: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.company-profile-setting-skeleton-input {
+  width: 100%;
+  height: 44px;
+}
+
+.company-profile-setting-skeleton-button {
+  width: 150px;
+  height: 44px;
+  margin-top: 8px;
 }
 
 @media (max-width: 768px) {

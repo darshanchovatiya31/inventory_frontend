@@ -50,6 +50,8 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [filterParams, setFilterParams] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -135,6 +137,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
   };
 
   const handleCreate = async () => {
+    setSubmitting(true);
     try {
       const token = localStorage.getItem('companyToken');
       const data = {
@@ -197,10 +200,13 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 timer: 4000, // auto close after 3 seconds
                 timerProgressBar: true,
               });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
+    setUpdating(true);
     try {
       const token = localStorage.getItem('companyToken');
       const data = {
@@ -249,6 +255,8 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
                 timer: 4000, // auto close after 3 seconds
                 timerProgressBar: true,
               });
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -436,105 +444,175 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
           </div>
 
           {/* Stats Cards */}
-          <div className="company-sales-stats">
-            <div className="company-sales-stat-card">
-              <div className="company-sales-stat-header">
-                <span className="company-sales-stat-badge">Total</span>
-              </div>
-              <div className="company-sales-stat-value">{stats.totalSales}</div>
-              <p className="company-sales-stat-label">Sales</p>
+          {loading ? (
+            <div className="company-sales-skeleton-stats">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="company-sales-skeleton-stat-card">
+                  <div className="company-skeleton company-sales-skeleton-stat-badge"></div>
+                  <div className="company-skeleton company-sales-skeleton-stat-value"></div>
+                  <div className="company-skeleton company-sales-skeleton-stat-label"></div>
+                </div>
+              ))}
             </div>
-            <div className="company-sales-stat-card">
-              <div className="company-sales-stat-header">
-                <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+          ) : (
+            <div className="company-sales-stats">
+              <div className="company-sales-stat-card">
+                <div className="company-sales-stat-header">
+                  <span className="company-sales-stat-badge">Total</span>
+                </div>
+                <div className="company-sales-stat-value">{stats.totalSales}</div>
+                <p className="company-sales-stat-label">Sales</p>
               </div>
-              <div className="company-sales-stat-value">{stats.monthlySales}</div>
-              <p className="company-sales-stat-label">This Month</p>
-            </div>
-            <div className="company-sales-stat-card">
-              <div className="company-sales-stat-header">
-                <span className="company-sales-stat-badge">Revenue</span>
+              <div className="company-sales-stat-card">
+                <div className="company-sales-stat-header">
+                  <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+                </div>
+                <div className="company-sales-stat-value">{stats.monthlySales}</div>
+                <p className="company-sales-stat-label">This Month</p>
               </div>
-              <div className="company-sales-stat-value">₹{stats.totalRevenue.toFixed(2)}</div>
-              <p className="company-sales-stat-label">Total</p>
-            </div>
-            <div className="company-sales-stat-card">
-              <div className="company-sales-stat-header">
-                <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+              <div className="company-sales-stat-card">
+                <div className="company-sales-stat-header">
+                  <span className="company-sales-stat-badge">Revenue</span>
+                </div>
+                <div className="company-sales-stat-value">₹{stats.totalRevenue.toFixed(2)}</div>
+                <p className="company-sales-stat-label">Total</p>
               </div>
-              <div className="company-sales-stat-value">₹{stats.monthlyRevenue.toFixed(2)}</div>
-              <p className="company-sales-stat-label">This Month</p>
+              <div className="company-sales-stat-card">
+                <div className="company-sales-stat-header">
+                  <span className="company-sales-stat-badge">{fromDate && toDate ? 'Period' : 'Monthly'}</span>
+                </div>
+                <div className="company-sales-stat-value">₹{stats.monthlyRevenue.toFixed(2)}</div>
+                <p className="company-sales-stat-label">This Month</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filter Section */}
-          <div className="company-sales-filters">
-            <div className="company-sales-filter-group">
-              <select 
-                className="company-sales-filter-input" 
-                value={filterType} 
-                onChange={handleFilterTypeChange}
-              >
-                <option value="all">All Time</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-                <option value="custom">Custom</option>
-              </select>
+          {loading ? (
+            <div className="company-sales-skeleton-filters">
+              <div className="company-skeleton company-sales-skeleton-filter-input"></div>
+              <div className="company-skeleton company-sales-skeleton-filter-input"></div>
+              <div className="company-skeleton company-sales-skeleton-filter-input"></div>
             </div>
-            {filterType === 'custom' && (
-              <>
-                <div className="company-sales-filter-group">
-                  <input 
-                    type="date" 
-                    className="company-sales-filter-input" 
-                    value={fromDate} 
-                    onChange={(e) => setFromDate(e.target.value)}
-                  />
-                </div>
-                <div className="company-sales-filter-group">
-                  <input 
-                    type="date" 
-                    className="company-sales-filter-input" 
-                    value={toDate} 
-                    onChange={(e) => setToDate(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            <div className="company-sales-filter-group">
-              <input 
-                type="text" 
-                className="company-sales-filter-input" 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by customer name"
-              />
+          ) : (
+            <div className="company-sales-filters">
+              <div className="company-sales-filter-group">
+                <select 
+                  className="company-sales-filter-input" 
+                  value={filterType} 
+                  onChange={handleFilterTypeChange}
+                >
+                  <option value="all">All Time</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              {filterType === 'custom' && (
+                <>
+                  <div className="company-sales-filter-group">
+                    <input 
+                      type="date" 
+                      className="company-sales-filter-input" 
+                      value={fromDate} 
+                      onChange={(e) => setFromDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="company-sales-filter-group">
+                    <input 
+                      type="date" 
+                      className="company-sales-filter-input" 
+                      value={toDate} 
+                      onChange={(e) => setToDate(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+              <div className="company-sales-filter-group">
+                <input 
+                  type="text" 
+                  className="company-sales-filter-input" 
+                  value={searchTerm} 
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by customer name"
+                />
+              </div>
+              <div className="company-sales-filter-actions">
+                <button 
+                  className="company-sales-filter-button company-sales-filter-button-primary" 
+                  onClick={applyFilters}
+                >
+                  <FaFilter size={14} />
+                  Apply
+                </button>
+                <button 
+                  className="company-sales-filter-button company-sales-filter-button-secondary" 
+                  onClick={clearFilters}
+                >
+                  Clear
+                </button>
+              </div>
             </div>
-            <div className="company-sales-filter-actions">
-              <button 
-                className="company-sales-filter-button company-sales-filter-button-primary" 
-                onClick={applyFilters}
-              >
-                <FaFilter size={14} />
-                Apply
-              </button>
-              <button 
-                className="company-sales-filter-button company-sales-filter-button-secondary" 
-                onClick={clearFilters}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Sales List */}
         <div className="company-sales-table-container">
           {loading ? (
-            <div className="company-sales-loading">
-              <div className="company-sales-spinner"></div>
-              <p className="company-sales-loading-text">Loading sales...</p>
-            </div>
+            <>
+              {/* Desktop Table Skeleton */}
+              <div className="company-sales-table-wrapper">
+                <div className="company-sales-skeleton-table">
+                  <div className="company-sales-skeleton-table-header">
+                    {[...Array(6)].map((_, index) => (
+                      <div key={index} className="company-skeleton company-sales-skeleton-table-header-cell"></div>
+                    ))}
+                  </div>
+                  {[...Array(5)].map((_, rowIndex) => (
+                    <div key={rowIndex} className="company-sales-skeleton-table-row">
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                      <div className="company-skeleton company-sales-skeleton-table-cell"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Mobile Card Skeleton */}
+              <div className="company-sales-skeleton-cards">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className="company-sales-skeleton-card">
+                    <div className="company-sales-skeleton-card-header">
+                      <div className="company-sales-skeleton-card-info">
+                        <div className="company-skeleton company-sales-skeleton-card-name"></div>
+                        <div className="company-skeleton company-sales-skeleton-card-email"></div>
+                      </div>
+                      <div className="company-skeleton company-sales-skeleton-card-amount"></div>
+                    </div>
+                    <div className="company-sales-skeleton-card-details">
+                      <div className="company-sales-skeleton-card-detail">
+                        <div className="company-skeleton company-sales-skeleton-card-detail-label"></div>
+                        <div className="company-skeleton company-sales-skeleton-card-detail-value"></div>
+                      </div>
+                      <div className="company-sales-skeleton-card-detail">
+                        <div className="company-skeleton company-sales-skeleton-card-detail-label"></div>
+                        <div className="company-skeleton company-sales-skeleton-card-detail-value"></div>
+                      </div>
+                    </div>
+                    <div className="company-sales-skeleton-card-footer">
+                      <div className="company-skeleton company-sales-skeleton-card-status"></div>
+                      <div className="company-sales-skeleton-card-actions">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="company-skeleton company-sales-skeleton-card-action"></div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : sales.length === 0 ? (
             <div className="company-sales-no-data">
               <div className="company-sales-no-data-icon">
@@ -742,6 +820,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         handleInputChange={handleInputChange}
         handleCreate={handleCreate}
         inventories={inventories}
+        submitting={submitting}
       />
 
       <EditSaleModal 
@@ -751,6 +830,7 @@ const Sales = ({ toggleSidebar, setCurrentPage, isOpen }) => {
         handleInputChange={handleInputChange}
         handleUpdate={handleUpdate}
         inventories={inventories}
+        updating={updating}
       />
 
       <ViewSaleModal 

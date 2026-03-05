@@ -63,12 +63,27 @@ const CompanyLogin = () => {
                 src={`${BaseUrl}/${companyInfo.logo}`} 
                 alt="Company Logo" 
                 className="company-logo-img"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const appLogo = e.target.parentElement.querySelector('.company-app-logo');
+                  if (appLogo) appLogo.style.display = 'block';
+                }}
               />
             ) : (
-              <div className="company-logo-placeholder">
-                <FaBuilding />
-              </div>
+              <img 
+                src="/icons/icon-192x192.png" 
+                alt="IMS Logo" 
+                className="company-logo-img company-app-logo"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const placeholder = e.target.parentElement.querySelector('.company-logo-placeholder');
+                  if (placeholder) placeholder.style.display = 'flex';
+                }}
+              />
             )}
+            <div className="company-logo-placeholder" style={{ display: 'none' }}>
+              <FaBuilding />
+            </div>
           </div>
           <h2 className="company-login-title">
             {companyInfo?.name ? companyInfo.name : 'Company Portal'}

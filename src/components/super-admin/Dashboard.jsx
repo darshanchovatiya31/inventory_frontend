@@ -32,9 +32,17 @@ const Dashboard = () => {
   return (
     <div className="admin-dashboard">
       {loading ? (
-        <div className="admin-dashboard-loading">
-          <div className="admin-dashboard-spinner"></div>
-          <p className="admin-dashboard-loading-text">Loading dashboard...</p>
+        <div className="admin-dashboard-skeleton-grid">
+          {[...Array(2)].map((_, index) => (
+            <div key={index} className="admin-dashboard-skeleton-card">
+              <div className="admin-skeleton admin-dashboard-skeleton-icon"></div>
+              <div className="admin-dashboard-skeleton-content">
+                <div className="admin-skeleton admin-dashboard-skeleton-label"></div>
+                <div className="admin-skeleton admin-dashboard-skeleton-value"></div>
+                <div className="admin-skeleton admin-dashboard-skeleton-description"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="admin-dashboard-grid">

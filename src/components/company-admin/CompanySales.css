@@ -212,27 +212,191 @@
   overflow: hidden;
 }
 
-.company-sales-loading {
+/* Skeleton Loader */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.company-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+.company-sales-skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.company-sales-skeleton-stat-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.company-sales-skeleton-stat-badge {
+  width: 50px;
+  height: 18px;
+  margin-bottom: 8px;
+  margin-left: auto;
+}
+
+.company-sales-skeleton-stat-value {
+  width: 80px;
+  height: 28px;
+  margin-bottom: 4px;
+}
+
+.company-sales-skeleton-stat-label {
+  width: 60px;
+  height: 14px;
+}
+
+.company-sales-skeleton-filters {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.company-sales-skeleton-filter-input {
+  height: 40px;
+}
+
+.company-sales-skeleton-table {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.company-sales-skeleton-table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-sales-skeleton-table-header-cell {
+  height: 16px;
+}
+
+.company-sales-skeleton-table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.company-sales-skeleton-table-cell {
+  height: 20px;
+}
+
+.company-sales-skeleton-cards {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
   gap: 16px;
+  padding: 16px;
 }
 
-.company-sales-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #1E3A8A;
-  border-radius: 50%;
+.company-sales-skeleton-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
 }
 
-.company-sales-loading-text {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
+.company-sales-skeleton-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.company-sales-skeleton-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-sales-skeleton-card-name {
+  width: 60%;
+  height: 18px;
+}
+
+.company-sales-skeleton-card-email {
+  width: 50%;
+  height: 14px;
+}
+
+.company-sales-skeleton-card-amount {
+  width: 80px;
+  height: 24px;
+}
+
+.company-sales-skeleton-card-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.company-sales-skeleton-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-sales-skeleton-card-detail-label {
+  width: 60px;
+  height: 12px;
+}
+
+.company-sales-skeleton-card-detail-value {
+  width: 80px;
+  height: 14px;
+}
+
+.company-sales-skeleton-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.company-sales-skeleton-card-status {
+  width: 80px;
+  height: 24px;
+  border-radius: 20px;
+}
+
+.company-sales-skeleton-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.company-sales-skeleton-card-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
 }
 
 .company-sales-no-data {
@@ -853,9 +1017,32 @@
   border: 1px solid #d1d5db;
 }
 
-.company-sales-modal-button-secondary:hover {
+.company-sales-modal-button-secondary:hover:not(:disabled) {
   background-color: #f9fafb;
   border-color: #9ca3af;
+}
+
+.company-sales-modal-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Responsive */
